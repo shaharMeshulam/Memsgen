@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Memsgen</title>
+</head>
+
+<body onload="onInitGallery()">
+    <!-- onload="onInitGallery()" -->
+    <header class="bg-orange">
+        <div class="flex justify-between main-layout align-center header-container">
+            <img class="logo" src="img/LOGO.png">
+            <nav class="">
+                <ul class="clear-list flex color-white">
+                    <li>
+                        <a class="flex align-center selected" href="#">Gallery</a>
+                    </li>
+                    <li>
+                        <a class="flex align-center" href="#">About</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="gallery">
+        <section class="search flex justify-between align-center main-layout">
+            <input type="text" name="search" placeholder="Enter search keyword" onkeyup="onSearch(this.value)">
+            <div class="keywords">
+                <ul class="clear-list flex align-center justify-end">
+                    <li class="funny">funny</li>
+                    <li class="comics">comics</li>
+                    <li class="dogs">dogs</li>
+                    <li class="dogs">drinks</li>
+                    <li class="dogs">books</li>
+                </ul>
+            </div>
+        </section>
+        <main>
+            <ul class="imgs-gallery clear-list main-layout grid"></ul>
+        </main>
+    </div>
+    <div class="dashboard flex main-layout">
+        <div class="canvas-container">
+            <canvas class="canvas"></canvas>
+        </div>
+        <div class="controls grid">
+            <input type="text" name="txt" onkeyup="onTextChange(this.value)">
+            <button class="up-and-down" onclick="onChangeLine()">
+                <img class="image-fluid" src="img/ICONS/up-and-down-opposite-double-arrows-side-by-side.png">
+            </button>
+            <button class="add" onclick="onAddTxt()">
+                <img class="image-fluid" src="img/ICONS/add.png">
+            </button>
+            <button class="trash" onclick="onRemoveLine()">
+                <img class="image-fluid" src="img/ICONS/trash.png">
+            </button>
+            <button class="increase-font" onclick="onChangeFontSize(5)">
+                <img class="image-fluid" src="img/ICONS/increase font - icon.png">
+            </button>
+            <button class="decrease-font" onclick="onChangeFontSize(-5)">
+                <img class="image-fluid" src="img/ICONS/decrease font - icon.png">
+            </button>
+            <button class="align-to-left" onclick="onSetAlign('left')">
+                <img class="image-fluid" src="img/ICONS/align-to-left.png">
+            </button>
+            <button class="center-text" onclick="onSetAlign('center')">
+                <img class="image-fluid" src="img/ICONS/center-text-alignment.png">
+            </button>
+            <button class="align-to-right" onclick="onSetAlign('right')">
+                <img class="image-fluid" src="img/ICONS/align-to-right.png">
+            </button>
+            <select name="font" onchange="onSetFont(this.value)">
+                <option value="Impact">Impact</option>
+                <option value="Arial">Arial</option>
+                <option value="serif">Serif</option>
+                <option value="sans-serif">Sans-Serif</option>
+            </select>
+            <button class="text-stroke">
+                <label for="text-stroke">
+                    <input type="color" name="text-stroke" id="text-stroke" onchange="onStrokeColorChange(this.value)">
+                    <img class="image-fluid" src="img/ICONS/text stroke.png">
+                </label>
+            </button>
+            <button class="text-color">
+                <label for="text-color">
+                    <input type="color" name="text-color" id="text-color" value="#ffffff"
+                        onchange="onTextColorChange(this.value)">
+                    <img class="image-fluid" src="img/ICONS/paint-board-and-brush.png">
+                </label>
+            </button>
+            <div class="stickers flex">
+                <img src="img/stickers/1.png">
+                <img src="img/stickers/2.png">
+                <img src="img/stickers/3.png">
+            </div>
+        </div>
+    </div>
+    <section class="about flex justify-center main-layout">
+        <img src="img/alina.png">
+        <div class="info flex justify-center direction-column">
+            <h2>Monica Geller</h2>
+            <p>is a fictional character, one of the six main characters <br> who appears on the American sitcom Friends
+                (1994–2004). Created by David Crane and Marta Kauffman</p>
+            <ul class="clear-list flex">
+                <li>
+                    <a href="#" class="flex justify-center align-center bg-orange fab fa-linkedin-in"></a>
+                </li>
+                <li>
+                    <a href="#" class="flex justify-center align-center bg-orange fab fa-facebook-f"></a>
+                </li>
+                <li>
+                    <a href="#" class="flex justify-center align-center bg-orange fab fa-github"></a>
+                </li>
+            </ul>
+        </div>
+    </section>
+    <footer class="flex direction-column justify-center align-center bg-orange">
+        <img class="logo" src="img/LOGO.png">
+        <small>all rights reserved 2019</small>
+    </footer>
+    <script src="js/services/dashboard.service.js"></script>
+    <script src="js/dashboard.controller.js"></script>
+    <script src="js/services/images.service.js"></script>
+    <script src="js/gallery.controller.js"></script>
+</body>
+
+</html>
