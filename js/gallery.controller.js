@@ -44,6 +44,6 @@ function onToggleMoreKeywords() {
 
 function onSelectImg(imgId) {
     document.querySelector('.gallery').hidden = true;
-    document.querySelector('.dashboard').hidden = false;
+    document.querySelector('.dashboard').style.display = 'flex';
     onDashboardInit(imgId);
 }

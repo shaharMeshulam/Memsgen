@@ -53,6 +53,7 @@ html {
 
 body {
     margin: 0;
+    min-height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -166,9 +167,6 @@ nav a:hover {
 }
 
 /* MAIN */
-main {
-    background-color: #e3e3e3;
-}
 
 /* IMGS GALLERY */
 main .imgs-gallery {
@@ -204,7 +202,6 @@ main .imgs-gallery {
 }
 
 .about a {
-    border-radius: 0.5em;
     color: white;
     height: 39px;
     width: 39px;
@@ -225,8 +222,14 @@ footer small {
 
 /* DASHBOARD */
 div.dashboard {
-    margin: 25px auto;
-    display: none;
+    padding: 25px 0;
+    flex-grow: 1;
+    /* display: none; */
+}
+
+.dashboard-container {
+    width: 100%;
+    min-height: 550px;
 }
 
 /* canvas */
@@ -241,7 +244,11 @@ div.dashboard {
 /* controls */
 .controls {
     flex-basis: 50%;
-    grid-template-rows: 1fr 1.3fr 1fr 1fr 2fr;
+}
+
+.controls-container {
+    width: 373px;
+    grid-template-rows: 1fr 1.3fr 1fr 1fr 2fr 1fr;
     grid-template-columns: repeat(5, 1fr);
     grid-template-areas: 
     "input input input input input"
@@ -249,63 +256,88 @@ div.dashboard {
     "increase-font decrease-font align-to-left center-text align-to-right"
     "select select select text-stroke text-color"
     "stickers stickers stickers stickers stickers"
+    ". . . share share";
 }
 
-.controls [name=txt] {
+.controls-container [name=txt] {
     grid-area: input;
+    height: 60px;
+    line-height: 60px;
+    border: 0;
+    margin-bottom: 11px;
 }
 
-.controls .up-and-down {
+.controls-container button {
+    width: 60px;
+    height: 60px;
+    border: 0;
+}
+
+.controls-container .up-and-down {
     grid-area: up-and-down;
 }
 
-.controls .add {
+.controls-container .add {
     grid-area: add;
 }
 
-.controls .trash {
+.controls-container .trash {
     grid-area: trash;
 }
 
-.controls .increase-font {
+.controls-container .increase-font {
     grid-area: increase-font;
 }
 
-.controls .decrease-font {
+.controls-container .decrease-font {
     grid-area: decrease-font;
 }
 
-.controls .align-to-left {
+.controls-container .align-to-left {
     grid-area: align-to-left;
 }
 
-.controls .center-text {
+.controls-container .center-text {
     grid-area: center-text;
 }
 
-.controls .align-to-right {
+.controls-container .align-to-right {
     grid-area: align-to-right;
 }
 
-.controls [name=font] {
+.controls-container [name=font] {
+    border: 0;
     grid-area: select;
+    height: 60px;
+    margin-right: 14px;
+    font-size: 1.25em;
 }
 
-.text-stroke {
+.controls-container .text-stroke {
     grid-area: text-stroke;
 }
 
-.text-color {
+.controls-container .text-color {
     grid-area: text-color;
 }
 
-.text-stroke [name=text-stroke], .text-color [name=text-color] {
+.controls-container .text-stroke [name=text-stroke], .text-color [name=text-color] {
     position: absolute;
     visibility: hidden
 }
 
-.stickers {
+.controls-container .stickers {
     grid-area: stickers;
+    height: 135px;
+    padding: 32px 49px;
+    gap: 24px;
+}
+
+.controls-container .share {
+    grid-area: share;
+    font-size: 1.25em;
+    width: auto;
+    /* padding: 9.7px 15.6px 8.3px 15.4px; */
 }
 
 /* HELPERS */
@@ -343,6 +375,14 @@ div.dashboard {
     background-color: #ff7f00;
 }
 
+.bg-gray {
+    background-color: #e3e3e3;
+}
+
+.bg-white {
+    background-color: white;
+}
+
 .color-white {
     color: white;
 }
@@ -358,4 +398,9 @@ div.dashboard {
     list-style: none;
     margin: 0;
     padding: 0;
+}
+
+/* rounded-corners */
+.rounded {
+    border-radius: 0.5em;
 }

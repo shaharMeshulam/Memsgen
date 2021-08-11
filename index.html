@@ -9,7 +9,7 @@
     <title>Memsgen</title>
 </head>
 
-<body onload="onInitGallery()">
+<body onload="onInitGallery()" class="flex direction-column">
     <!-- onload="onInitGallery()" -->
     <header class="bg-orange">
         <div class="flex justify-between main-layout align-center header-container">
@@ -39,85 +39,91 @@
                 </ul>
             </div>
         </section>
-        <main>
+        <main class="bg-gray">
             <ul class="imgs-gallery clear-list main-layout grid"></ul>
         </main>
+        <section class="about flex justify-center main-layout">
+            <img src="img/alina.png">
+            <div class="info flex justify-center direction-column">
+                <h2>Monica Geller</h2>
+                <p>is a fictional character, one of the six main characters <br> who appears on the American sitcom
+                    Friends
+                    (1994–2004). Created by David Crane and Marta Kauffman</p>
+                <ul class="clear-list flex">
+                    <li>
+                        <a href="#" class="rounded flex justify-center align-center bg-orange fab fa-linkedin-in"></a>
+                    </li>
+                    <li>
+                        <a href="#" class="rounded flex justify-center align-center bg-orange fab fa-facebook-f"></a>
+                    </li>
+                    <li>
+                        <a href="#" class="rounded flex justify-center align-center bg-orange fab fa-github"></a>
+                    </li>
+                </ul>
+            </div>
+        </section>
     </div>
-    <div class="dashboard flex main-layout">
-        <div class="canvas-container">
-            <canvas class="canvas"></canvas>
-        </div>
-        <div class="controls grid">
-            <input type="text" name="txt" onkeyup="onTextChange(this.value)">
-            <button class="up-and-down" onclick="onChangeLine()">
-                <img class="image-fluid" src="img/ICONS/up-and-down-opposite-double-arrows-side-by-side.png">
-            </button>
-            <button class="add" onclick="onAddTxt()">
-                <img class="image-fluid" src="img/ICONS/add.png">
-            </button>
-            <button class="trash" onclick="onRemoveLine()">
-                <img class="image-fluid" src="img/ICONS/trash.png">
-            </button>
-            <button class="increase-font" onclick="onChangeFontSize(5)">
-                <img class="image-fluid" src="img/ICONS/increase font - icon.png">
-            </button>
-            <button class="decrease-font" onclick="onChangeFontSize(-5)">
-                <img class="image-fluid" src="img/ICONS/decrease font - icon.png">
-            </button>
-            <button class="align-to-left" onclick="onSetAlign('left')">
-                <img class="image-fluid" src="img/ICONS/align-to-left.png">
-            </button>
-            <button class="center-text" onclick="onSetAlign('center')">
-                <img class="image-fluid" src="img/ICONS/center-text-alignment.png">
-            </button>
-            <button class="align-to-right" onclick="onSetAlign('right')">
-                <img class="image-fluid" src="img/ICONS/align-to-right.png">
-            </button>
-            <select name="font" onchange="onSetFont(this.value)">
-                <option value="Impact">Impact</option>
-                <option value="Arial">Arial</option>
-                <option value="serif">Serif</option>
-                <option value="sans-serif">Sans-Serif</option>
-            </select>
-            <button class="text-stroke">
-                <label for="text-stroke">
-                    <input type="color" name="text-stroke" id="text-stroke" onchange="onStrokeColorChange(this.value)">
-                    <img class="image-fluid" src="img/ICONS/text stroke.png">
-                </label>
-            </button>
-            <button class="text-color">
-                <label for="text-color">
-                    <input type="color" name="text-color" id="text-color" value="#ffffff"
-                        onchange="onTextColorChange(this.value)">
-                    <img class="image-fluid" src="img/ICONS/paint-board-and-brush.png">
-                </label>
-            </button>
-            <div class="stickers flex">
-                <img src="img/stickers/1.png">
-                <img src="img/stickers/2.png">
-                <img src="img/stickers/3.png">
+    <div class="dashboard bg-gray">
+        <div class="dashboard-container flex main-layout">
+            <div class="canvas-container">
+                <canvas class="canvas"></canvas>
+            </div>
+            <div class="controls flex justify-center">
+                <div class="controls-container grid">
+                    <input type="text" name="txt" onkeyup="onTextChange(this.value)" class="rounded bg-white">
+                    <button class="up-and-down rounded bg-white" onclick="onChangeLine()">
+                        <img class="image-fluid" src="img/ICONS/up-and-down-opposite-double-arrows-side-by-side.png">
+                    </button>
+                    <button class="add rounded bg-white" onclick="onAddTxt()">
+                        <img class="image-fluid" src="img/ICONS/add.png">
+                    </button>
+                    <button class="trash rounded bg-white" onclick="onRemoveLine()">
+                        <img class="image-fluid" src="img/ICONS/trash.png">
+                    </button>
+                    <button class="increase-font rounded bg-white" onclick="onChangeFontSize(5)">
+                        <img class="image-fluid" src="img/ICONS/increase font - icon.png">
+                    </button>
+                    <button class="decrease-font rounded bg-white" onclick="onChangeFontSize(-5)">
+                        <img class="image-fluid" src="img/ICONS/decrease font - icon.png">
+                    </button>
+                    <button class="align-to-left rounded bg-white" onclick="onSetAlign('left')">
+                        <img class="image-fluid" src="img/ICONS/align-to-left.png">
+                    </button>
+                    <button class="center-text rounded bg-white" onclick="onSetAlign('center')">
+                        <img class="image-fluid" src="img/ICONS/center-text-alignment.png">
+                    </button>
+                    <button class="align-to-right rounded bg-white" onclick="onSetAlign('right')">
+                        <img class="image-fluid" src="img/ICONS/align-to-right.png">
+                    </button>
+                    <select class="rounded bg-white" name="font" onchange="onSetFont(this.value)">
+                        <option value="Impact">Impact</option>
+                        <option value="Arial">Arial</option>
+                        <option value="serif">Serif</option>
+                        <option value="sans-serif">Sans-Serif</option>
+                    </select>
+                    <button class="text-stroke rounded bg-white">
+                        <label for="text-stroke">
+                            <input type="color" name="text-stroke" id="text-stroke" onchange="onStrokeColorChange(this.value)">
+                            <img class="image-fluid" src="img/ICONS/text stroke.png">
+                        </label>
+                    </button>
+                    <button class="text-color rounded bg-white">
+                        <label for="text-color">
+                            <input type="color" name="text-color" id="text-color" value="#ffffff"
+                                onchange="onTextColorChange(this.value)">
+                            <img class="image-fluid" src="img/ICONS/paint-board-and-brush.png">
+                        </label>
+                    </button>
+                    <div class="stickers flex rounded bg-white">
+                        <img src="img/stickers/1.png">
+                        <img src="img/stickers/2.png">
+                        <img src="img/stickers/3.png">
+                    </div>
+                    <button class="share rounded bg-orange">Share</button>
+                </div>
             </div>
         </div>
     </div>
-    <section class="about flex justify-center main-layout">
-        <img src="img/alina.png">
-        <div class="info flex justify-center direction-column">
-            <h2>Monica Geller</h2>
-            <p>is a fictional character, one of the six main characters <br> who appears on the American sitcom Friends
-                (1994–2004). Created by David Crane and Marta Kauffman</p>
-            <ul class="clear-list flex">
-                <li>
-                    <a href="#" class="flex justify-center align-center bg-orange fab fa-linkedin-in"></a>
-                </li>
-                <li>
-                    <a href="#" class="flex justify-center align-center bg-orange fab fa-facebook-f"></a>
-                </li>
-                <li>
-                    <a href="#" class="flex justify-center align-center bg-orange fab fa-github"></a>
-                </li>
-            </ul>
-        </div>
-    </section>
     <footer class="flex direction-column justify-center align-center bg-orange">
         <img class="logo" src="img/LOGO.png">
         <small>all rights reserved 2019</small>
