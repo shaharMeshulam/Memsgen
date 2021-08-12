@@ -9,15 +9,19 @@
     <title>Memsgen</title>
 </head>
 
-<body onload="onInitGallery()" class="flex direction-column">
+<body onload="onInitGallery(); onSavedMemesInit()" class="flex direction-column" onkeyup="onChangeTextFromKeyup(event)">
     <!-- onload="onInitGallery()" -->
     <header class="bg-orange">
-        <div class="flex justify-between main-layout align-center header-container">
+        <div class="flex justify-between main-layout align-center header-container bg-orange">
             <img class="logo" src="img/LOGO.png">
-            <nav class="">
-                <ul class="clear-list flex color-white">
+            <button class="fas fa-bars btn-menu" onclick="onToggleMenu()"></button>
+            <nav class="bg-orange">
+                <ul class="main-nav clear-list flex direction-column color-white">
                     <li>
-                        <a class="flex align-center selected" href="#">Gallery</a>
+                        <a class="link-gallery flex align-center selected" href="#" onclick="onSetPage('gallery')">Gallery</a>
+                    </li>
+                    <li>
+                        <a class="link-memes flex align-center" href="#" onclick="onSetPage('memes')">Memes</a>
                     </li>
                     <li>
                         <a class="flex align-center" href="#">About</a>
@@ -27,45 +31,45 @@
         </div>
     </header>
     <div class="gallery">
-        <section class="search flex justify-between align-center main-layout">
-            <input type="text" name="search" placeholder="Enter search keyword" onkeyup="onSearch(this.value)">
+        <section class="search flex justify-center align-center direction-column main-layout">
+            <input type="text" name="search" placeholder="Enter search keyword" list="keywords"
+                onkeyup="onSearch(this.value)">
+            <datalist id="keywords"></datalist>
             <div class="keywords">
-                <ul class="clear-list flex align-center justify-end">
-                    <li class="funny">funny</li>
-                    <li class="comics">comics</li>
-                    <li class="dogs">dogs</li>
-                    <li class="dogs">drinks</li>
-                    <li class="dogs">books</li>
-                </ul>
+                <ul class="clear-list flex align-center justify-end"></ul>
             </div>
         </section>
         <main class="bg-gray">
             <ul class="imgs-gallery clear-list main-layout grid"></ul>
         </main>
-        <section class="about flex justify-center main-layout">
-            <img src="img/alina.png">
-            <div class="info flex justify-center direction-column">
-                <h2>Monica Geller</h2>
-                <p>is a fictional character, one of the six main characters <br> who appears on the American sitcom
-                    Friends
-                    (1994–2004). Created by David Crane and Marta Kauffman</p>
-                <ul class="clear-list flex">
-                    <li>
-                        <a href="#" class="rounded flex justify-center align-center bg-orange fab fa-linkedin-in"></a>
-                    </li>
-                    <li>
-                        <a href="#" class="rounded flex justify-center align-center bg-orange fab fa-facebook-f"></a>
-                    </li>
-                    <li>
-                        <a href="#" class="rounded flex justify-center align-center bg-orange fab fa-github"></a>
-                    </li>
-                </ul>
+        <section class="about">
+            <div class="about-container flex justify-center align-center direction-column main-layout">
+                <img src="img/alina.png">
+                <div class="info flex justify-center direction-column">
+                    <h2>Monica Geller</h2>
+                    <p>is a fictional character, one of the six main characters <br> who appears on the American sitcom
+                        Friends
+                        (1994–2004). Created by David Crane and Marta Kauffman</p>
+                    <ul class="clear-list flex justify-center">
+                        <li>
+                            <a href="#"
+                                class="rounded flex justify-center align-center bg-orange fab fa-linkedin-in"></a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="rounded flex justify-center align-center bg-orange fab fa-facebook-f"></a>
+                        </li>
+                        <li>
+                            <a href="#" class="rounded flex justify-center align-center bg-orange fab fa-github"></a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </section>
     </div>
-    <div class="dashboard bg-gray">
-        <div class="dashboard-container flex main-layout">
-            <div class="canvas-container">
+    <div class="dashboard bg-gray align-center">
+        <div class="dashboard-container flex main-layout direction-column">
+            <div class="canvas-container flex justify-center">
                 <canvas class="canvas"></canvas>
             </div>
             <div class="controls flex justify-center">
@@ -86,13 +90,13 @@
                     <button class="decrease-font rounded bg-white" onclick="onChangeFontSize(-5)">
                         <img class="image-fluid" src="img/ICONS/decrease font - icon.png">
                     </button>
-                    <button class="align-to-left rounded bg-white" onclick="onSetAlign('left')">
+                    <button class="align-to-left rounded bg-white" onclick="onSetAlign('right')">
                         <img class="image-fluid" src="img/ICONS/align-to-left.png">
                     </button>
                     <button class="center-text rounded bg-white" onclick="onSetAlign('center')">
                         <img class="image-fluid" src="img/ICONS/center-text-alignment.png">
                     </button>
-                    <button class="align-to-right rounded bg-white" onclick="onSetAlign('right')">
+                    <button class="align-to-right rounded bg-white" onclick="onSetAlign('left')">
                         <img class="image-fluid" src="img/ICONS/align-to-right.png">
                     </button>
                     <select class="rounded bg-white" name="font" onchange="onSetFont(this.value)">
@@ -103,7 +107,8 @@
                     </select>
                     <button class="text-stroke rounded bg-white">
                         <label for="text-stroke">
-                            <input type="color" name="text-stroke" id="text-stroke" onchange="onStrokeColorChange(this.value)">
+                            <input type="color" name="text-stroke" id="text-stroke"
+                                onchange="onStrokeColorChange(this.value)">
                             <img class="image-fluid" src="img/ICONS/text stroke.png">
                         </label>
                     </button>
@@ -120,14 +125,27 @@
                         <img src="img/stickers/3.png">
                     </div>
                     <button class="share rounded bg-orange">Share</button>
+                    <button class="save rounded bg-orange" onclick="draw(true)">Save</button>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="memes bg-gray" hidden>
+        <div class="memes-container main-layout">
+            <h2></h2>
+            <ul class="clear-list grid">
+            </ul>
         </div>
     </div>
     <footer class="flex direction-column justify-center align-center bg-orange">
         <img class="logo" src="img/LOGO.png">
         <small>all rights reserved 2019</small>
     </footer>
+    <script src="js/utils.js"></script>
+    <script src="js/services/storage.service.js"></script>
+    <script src="js/main-nav.controller.js"></script>
+    <script src="js/services/saved-memes.service.js"></script>
+    <script src="js/saved-memes.controller.js"></script>
     <script src="js/services/dashboard.service.js"></script>
     <script src="js/dashboard.controller.js"></script>
     <script src="js/services/images.service.js"></script>

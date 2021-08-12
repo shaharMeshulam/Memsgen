@@ -5,6 +5,16 @@ let gIsMoreKeywords = false;
 function onInitGallery() {
     renderKeyWords();
     renderGallery();
+    renderKeyWordsDatalist();
+}
+
+function renderKeyWordsDatalist() {
+    let strHtml = ''
+    const keyWords = getKeywords();
+    for (let keyword in keyWords) {
+        strHtml += `<option value="${keyword}">`;
+    }
+    document.getElementById('keywords').innerHTML = strHtml;
 }
 
 function renderKeyWords() {
@@ -16,7 +26,8 @@ function renderKeyWords() {
         if (count > 5 && !gIsMoreKeywords) break;
         strHtml += `<li style="font-size: calc(1em + ${keyWords[keyword]}em)" onclick="onKeywordClick('${keyword}')">${keyword}</li>`;
     }
-    strHtml += `<li onclick="onToggleMoreKeywords()">More...</li>`
+    const str = gIsMoreKeywords ? 'Less...' : 'More...'
+    strHtml += `<li onclick="onToggleMoreKeywords()">${str}</li>`
     document.querySelector('.keywords ul').innerHTML = strHtml;
 }
 
@@ -43,7 +54,6 @@ function onToggleMoreKeywords() {
 }
 
 function onSelectImg(imgId) {
-    document.querySelector('.gallery').hidden = true;
-    document.querySelector('.dashboard').style.display = 'flex';
+    onSetPage('dashboard');
     onDashboardInit(imgId);
 }

@@ -10,6 +10,14 @@ function initDashboard(selectedImgId) {
     gFontSize = 40;
 }
 
+function getMeme() {
+    return gMeme;
+}
+
+function loadMeme(memeId) {
+    gMeme = getMemeById(memeId);
+}
+
 function setLineText(txt) {
     gMeme.lines[gMeme.selectedLineIdx].txt = txt;
 }
@@ -40,6 +48,11 @@ function changeSelectedLineIdx() {
     else gMeme.selectedLineIdx = 0;
 }
 
+function moveLine(dx, dy) {
+    gMeme.lines[gMeme.selectedLineIdx].x = dx;
+    gMeme.lines[gMeme.selectedLineIdx].y = dy;
+}
+
 function changeFontSize(diff) {
     gMeme.lines[gMeme.selectedLineIdx].size += diff;
 }
@@ -68,6 +81,10 @@ function getSelectedLine() {
     return gMeme.lines[gMeme.selectedLineIdx];
 }
 
+function setSelectedLine(idx) {
+    gMeme.selectedLineIdx = idx;
+}
+
 function getSelectedImgId() {
     return gMeme.selectedImgId;
 }
@@ -82,6 +99,10 @@ function removeLine() {
     gMeme.selectedLineIdx = null;
 }
 
+function setMemeId(id) {
+    gMeme.id = id;
+}
+
 function _createLine(txt, x, y, strokeColor, color, size, font = 'Impact', align = 'center') {
     return {
         txt,
@@ -94,4 +115,3 @@ function _createLine(txt, x, y, strokeColor, color, size, font = 'Impact', align
         align
     }
 }
-

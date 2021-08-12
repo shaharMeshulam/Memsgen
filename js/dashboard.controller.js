@@ -3,15 +3,19 @@ const gTouchEvs = ['touchstart', 'touchmove', 'touchend'];
 const MARGIN = 20;
 let gElCanvas;
 let gCtx;
+let gIsDrag;
+let gStartPos = {};
 
-function onDashboardInit(selectedImgId) {
+function onDashboardInit(selectedImgId, memeId = null) {
     initDashboard(selectedImgId);
     gElCanvas = document.querySelector('canvas');
     gCtx = gElCanvas.getContext('2d');
     resizeCanvas();
-    renderImg(getImgSrcById(selectedImgId));
     addMouseListeners();
     addTouchListeners();
+    window.addEventListener('resize', onResize);
+    if (!memeId) renderImg(getImgSrcById(selectedImgId));
+    else onLoadMeme(memeId);
 }
 
 function addMouseListeners() {
@@ -27,24 +31,55 @@ function addTouchListeners() {
 }
 
 function onMove(ev) {
-
+    if (!gIsDrag) return;
+    const pos = getEvPos(ev);
+    const dx = pos.x;
+    const dy = pos.y;
+    moveLine(dx, dy);
+    draw();
 }
 
 function onDown(ev) {
     ev.preventDefault();
     const { x, y } = getEvPos(ev);
-    var currLine = getSelectedLine();
-    // const lineWidth = currLine.width;
-    // const size = currLine.size;
-    drawRect(currLine.x - currLine.width / 2 - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
+    const lines = getLines();
+    let selectedLineIdx = null;
+    for (let i = 0; i < lines.length; i++) {
+        const currLine = lines[i];
+        let currLineX1 = null;
+        let currLineX2 = null;
+        let currLineY1 = null;
+        let currLineY2 = null
+        switch (currLine.align) {
+            case 'right':
+                currLineX1 = currLine.x - currLine.width - MARGIN;
+                break;
+            case 'left':
+                currLineX1 = currLine.x - MARGIN;
+                break;
+            default:
+                currLineX1 = currLine.x - currLine.width / 2 - MARGIN
+        }
+        currLineX2 = currLineX1 + currLine.width + MARGIN + MARGIN;
+        currLineY1 = currLine.y - currLine.size - MARGIN / 4;
+        currLineY2 = currLineY1 + currLine.size + MARGIN
+        if (x > currLineX1 && x < currLineX2 && y > currLineY1 && y < currLineY2) {
+            selectedLineIdx = i;
+            break;
+        }
+    }
+    setSelectedLine(selectedLineIdx);
+    if (!isNaN(selectedLineIdx)) gIsDrag = true
+    else gIsDrag = false;
+    draw();
 }
 
 function onUp(ev) {
-
+    gIsDrag = false;
 }
 
 function getEvPos(ev) {
-    var pos = {
+    let pos = {
         x: ev.offsetX,
         y: ev.offsetY
     }
@@ -59,10 +94,27 @@ function getEvPos(ev) {
     return pos
 }
 
+function onLoadMeme(memeId) {
+    loadMeme(memeId);
+    updateText();
+    draw();
+}
+
+function onResize() {
+    resizeCanvas();
+    draw();
+}
+
 function resizeCanvas() {
-    var elContainer = document.querySelector('.canvas-container');
-    gElCanvas.width = elContainer.offsetWidth - 20;
-    gElCanvas.height = gElCanvas.width
+    const elContainer = document.querySelector('.canvas-container');
+    let vmin = Math.min(elContainer.offsetWidth, elContainer.offsetHeight)
+    if (vmin < 550) vmin = elContainer.offsetWidth;
+    gElCanvas.width = vmin;
+    gElCanvas.height = vmin;
+}
+
+function updateText() {
+    document.querySelector('[name=txt]').value = getSelectedLine().txt;
 }
 
 function onTextChange(txt) {
@@ -71,11 +123,19 @@ function onTextChange(txt) {
     draw();
 }
 
-function onChangeLine() {
+function onChangeTextFromKeyup(ev) {
     if (!getSelectedLine()) return;
-    changeSelectedLineIdx();
-    const currLine = getSelectedLine();
+    var elInput = document.querySelector('[name=txt]');
+    if (ev.key === 'Backspace') {
+        elInput.value = elInput.value.substr(0, elInput.value.length - 1);
+    } else if (ev.which <= 90 && ev.which >= 48 || ev.which === 32) elInput.value += ev.key;
+    onTextChange(elInput.value);
+}
 
+function onChangeLine() {
+    changeSelectedLineIdx();
+    if (!getSelectedLine()) return;
+    updateText();
     draw();
 }
 
@@ -102,6 +162,7 @@ function onChangeFontSize(diff) {
 function onSetAlign(alignOption) {
     if (!getSelectedLine()) return;
     setLineAlign(alignOption);
+    draw();
 }
 
 function onSetFont(fontOption) {
@@ -122,20 +183,40 @@ function onTextColorChange(colorValue) {
     draw();
 }
 
-function draw() {
+function onSave() {
+    const id = addMeme(getMeme(), gElCanvas.toDataURL());
+    setMemeId(id);
+    renderMemes();
+}
+
+function draw(isForSave = false) {
     renderImg(getImgSrcById(getSelectedImgId()), () => {
         const lines = getLines();
         lines.forEach((line, idx) => {
-            drawText(idx, line.txt, line.x, line.y, line.strokeColor, line.color, line.font, line.size)
+            drawText(idx, line.txt, line.x, line.y, line.strokeColor, line.color, line.font, line.size, line.align)
         });
-        drawLineSelectedRect();
+        // if i want to save the meme i need to hide the rect around the text, and after i save i return the rect.
+        if (!isForSave) drawLineSelectedRect();
+        else {
+            onSave();
+            draw();
+        }
     });
 }
 
 function drawLineSelectedRect() {
     var currLine = getSelectedLine();
     if (!currLine) return;
-    drawRect(currLine.x - currLine.width / 2 - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
+    switch (currLine.align) {
+        case 'right':
+            drawRect(currLine.x - currLine.width - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
+            break;
+        case 'left':
+            drawRect(currLine.x - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
+            break;
+        default:
+            drawRect(currLine.x - currLine.width / 2 - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
+    }
 }
 
 function renderImg(img, callback = null) {
@@ -147,12 +228,12 @@ function renderImg(img, callback = null) {
     image.src = img;
 }
 
-function drawText(lineIdx, txt, x, y, strokeColor, color, font, size) {
+function drawText(lineIdx, txt, x, y, strokeColor, color, font, size, align) {
     gCtx.save();
     gCtx.strokeStyle = strokeColor;
     gCtx.fillStyle = color;
     gCtx.font = `${size}px ${font}`;
-    gCtx.textAlign = "center";
+    gCtx.textAlign = align;
     gCtx.fillText(txt, x, y);
     gCtx.strokeText(txt, x, y);
     setLineWidth(lineIdx, gCtx.measureText(txt).width);

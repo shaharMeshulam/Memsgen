@@ -29,8 +29,17 @@
     src: url(../fonts/fa-brands-400.ttf);
 }
 
+@font-face {
+    font-family: fas;
+    src: url(../fonts/fa-solid-900.ttf);
+}
+
 .fab {
     font-family: brands;
+}
+
+.fas {
+    font-family: fas;
 }
 
 .fab.fa-facebook-f::before {
@@ -43,6 +52,14 @@
 
 .fab.fa-github::before {
     content: "\f09b";
+}
+
+.fas.fa-bars:before {
+    content: "\f0c9"; 
+}
+
+.fas.fa-times::before {
+    content: "\f00d";
 }
 
 /* BASE */
@@ -71,13 +88,15 @@ p {
 }
 /* LAYOUT */
 .main-layout {
-    max-width: 1100px;
-    margin: auto;
+    /* max-width: 1100px; */
+    padding: 0 10px;
 }
 
 /* HEADER */
 header {
     height: 66px;
+    position: relative;
+    z-index: 1;
 }
 
 .header-container {
@@ -88,9 +107,27 @@ header {
     height: 22px;
 }
 
+.btn-menu {
+    background-color: transparent;
+    border: 0;
+    color: white;
+    font-size: 2em;
+    cursor: pointer;
+}
+
 /* nav */
 nav {
     height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    z-index: -1;
+    transform: translateY(-100%);
+    transition: transform 0.6s;
+}
+
+.main-nav-open nav {
+    transform: translateY(100%);
 }
 
 nav ul {
@@ -98,18 +135,7 @@ nav ul {
 }
 
 nav li {
-    padding: 0 16px;
-}
-
-/* .header-container li:hover {
-    text-decoration: underline;
-} */
-nav li:first-child {
-    padding-inline-start: 0;
-}
-
-nav li:last-child {
-    padding-inline-end: 0;
+    flex-grow: 1;
 }
 
 nav a {
@@ -117,10 +143,10 @@ nav a {
     color: inherit;
     height: 100%;
     transition: 0.6s;
+    padding-inline-start: 10px;
 }
 
 nav a.selected {
-    box-shadow: inset 0 -4px #03092b;
     color: #040a2c;
 }
 
@@ -167,12 +193,15 @@ nav a:hover {
 }
 
 /* MAIN */
+main {
+    padding: 0 10px;
+}
 
 /* IMGS GALLERY */
-main .imgs-gallery {
+main .imgs-gallery, .memes ul {
     padding: 20px 0;
     gap: 20px;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
     margin:auto;
 }
 
@@ -188,8 +217,8 @@ main .imgs-gallery {
     margin-bottom: 166px;
 }
 
-.about .info {
-    margin-inline-start: 40px;
+.about-container { 
+    text-align: center;
 }
 
 .about .info p {
@@ -206,6 +235,10 @@ main .imgs-gallery {
     height: 39px;
     width: 39px;
     text-decoration: none;
+}
+
+.about img {
+    max-width: 322px;
 }
 
 /* FOOTER */
@@ -244,6 +277,7 @@ div.dashboard {
 /* controls */
 .controls {
     flex-basis: 50%;
+    margin-top: 25px;
 }
 
 .controls-container {
@@ -256,7 +290,7 @@ div.dashboard {
     "increase-font decrease-font align-to-left center-text align-to-right"
     "select select select text-stroke text-color"
     "stickers stickers stickers stickers stickers"
-    ". . . share share";
+    "save save . share share";
 }
 
 .controls-container [name=txt] {
@@ -265,12 +299,15 @@ div.dashboard {
     line-height: 60px;
     border: 0;
     margin-bottom: 11px;
+    font-size: 1.25em;
+    padding: 0 22px;
 }
 
 .controls-container button {
     width: 60px;
     height: 60px;
     border: 0;
+    padding: 11px;
 }
 
 .controls-container .up-and-down {
@@ -311,6 +348,7 @@ div.dashboard {
     height: 60px;
     margin-right: 14px;
     font-size: 1.25em;
+    padding: 0 22px;
 }
 
 .controls-container .text-stroke {
@@ -333,11 +371,49 @@ div.dashboard {
     gap: 24px;
 }
 
-.controls-container .share {
-    grid-area: share;
+.controls-container .share, .controls-container .save {
+    color: white;
     font-size: 1.25em;
     width: auto;
-    /* padding: 9.7px 15.6px 8.3px 15.4px; */
+}
+
+.controls-container .share {
+    grid-area: share;
+}
+
+.controls-container .save {
+    grid-area: save;
+}
+
+/* MEMES */
+.memes {
+    flex-grow: 1;
+    padding: 20px 0;
+}
+
+.memes h2 {
+    text-align: center;
+}
+
+.memes ul img {
+    width: 100%;
+}
+
+.memes .meme {
+    position: relative;
+}
+
+.meme .actions {
+    position: absolute;
+    bottom: 15px;
+    left: 15px
+}
+
+.meme button {
+    padding: 15px;
+    color: #fff;
+    border: 0;
+    cursor: pointer;
 }
 
 /* HELPERS */
@@ -383,6 +459,10 @@ div.dashboard {
     background-color: white;
 }
 
+.bg-red {
+    background-color: rgb(138, 19, 19);
+}
+
 .color-white {
     color: white;
 }
@@ -403,4 +483,88 @@ div.dashboard {
 /* rounded-corners */
 .rounded {
     border-radius: 0.5em;
+}
+
+@media (min-width: 900px) {
+    .main-layout {
+        margin: 0 auto;
+        max-width: 900px;
+        padding: 0;
+    }
+    .btn-menu { 
+        display: none;
+    }
+    .main-nav-open nav {
+        transform: translateY(0);
+        z-index: 2;
+    }
+    nav {
+        position: static;
+        width: auto;
+        transform: translateY(0);
+        z-index: 1;
+    }
+    nav ul.main-nav {
+        flex-direction: row;
+    }
+    nav li {
+        padding: 0 16px;
+    }
+    nav li:first-child {
+        padding-inline-start: 0;
+    }
+    nav li:last-child {
+        padding-inline-end: 0;
+    }
+    nav a {
+        padding: 0;
+    }
+    nav a.selected {
+        box-shadow: inset 0 -4px #03092b;
+    }
+    .search {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    main .imgs-gallery, .memes ul {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    div.dashboard-container {
+        height: 550px;
+        flex-direction: row;
+    }
+    .controls {
+        margin-top: 0;
+    }
+    .controls-container {
+        width: auto;
+        margin-left: 30px;
+    }
+    .controls-container .stickers {
+        gap: unset;
+    }
+    .about-container {
+        flex-direction: row;
+        text-align: left;
+    }
+    .about .info {
+        margin-inline-start: 40px;
+    }
+    .about ul {
+        justify-content: flex-start;
+    }
+}
+
+/* REGULAR */
+@media (min-width: 1124px) {
+    .main-layout {
+        max-width: 1100px;
+    }
+    .controls-container {
+        margin-left: 0;
+        width: 373px;
+    }
+    .controls-container .stickers {
+        gap: 24px;
+    }
 }
