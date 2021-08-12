@@ -18,13 +18,13 @@
             <nav class="bg-orange">
                 <ul class="main-nav clear-list flex direction-column color-white">
                     <li>
-                        <a class="link-gallery flex align-center selected" href="#" onclick="onSetPage('gallery')">Gallery</a>
+                        <a class="link-gallery flex align-center selected" href="#" onclick="onSetPage('gallery'); onToggleMenu()">Gallery</a>
                     </li>
                     <li>
-                        <a class="link-memes flex align-center" href="#" onclick="onSetPage('memes')">Memes</a>
+                        <a class="link-memes flex align-center" href="#" onclick="onSetPage('memes'); onToggleMenu()">Memes</a>
                     </li>
                     <li>
-                        <a class="flex align-center" href="#" onclick="onShowModal('about')">About</a>
+                        <a class="flex align-center" href="#" onclick="onShowModal('about'); onToggleMenu()">About</a>
                     </li>
                 </ul>
             </nav>
@@ -160,5 +160,4 @@
     <script src="js/services/images.service.js"></script>
     <script src="js/gallery.controller.js"></script>
 </body>
-
 </html>

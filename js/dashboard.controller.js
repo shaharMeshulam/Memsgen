@@ -6,6 +6,7 @@ let gElCanvas;
 let gCtx;
 let gIsDrag;
 let gLastEditWithoutRect;
+let gCanvasSize = {};
 
 function onDashboardInit(selectedImgId, memeId = null) {
     initDashboard(selectedImgId);
@@ -218,15 +219,12 @@ function drawLineSelectedRect() {
     switch (currLine.align) {
         case 'right':
             lineX1 = currLine.x - currLine.width - MARGIN;
-            // drawRect(currLine.x - currLine.width - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
             break;
         case 'left':
             lineX1 = currLine.x - MARGIN
-            // drawRect(currLine.x - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
             break;
         default:
             lineX1 = currLine.x - currLine.width / 2 - MARGIN;
-        // drawRect(currLine.x - currLine.width / 2 - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
     }
     let lineX2 = currLine.width + MARGIN + MARGIN;
     let lineY1 = currLine.y - currLine.size - MARGIN / 4;
@@ -237,7 +235,21 @@ function drawLineSelectedRect() {
 function renderImg(img, callback = null) {
     var image = new Image();
     image.onload = function () {
-        gCtx.drawImage(image, 0, 0, gElCanvas.width, gElCanvas.height);
+        // const ch = (gElCanvas.width * image.height) / image.width;
+        // const cw = (image.height * gElCanvas.width) / image.width
+        const wrh = image.width / image.height;
+        let newWidth = gElCanvas.width;
+        let newHeight = newWidth / wrh;
+        if (newHeight > gElCanvas.height) {
+            newHeight = gElCanvas.height;
+            newWidth = newHeight * wrh;
+        }
+        // gElCanvas.height = newHeight;
+        // gElCanvas.width = newWidth;
+        gCtx.drawImage(image, 0, 0, newWidth, newHeight);
+        // gCtx.drawImage(image, 0, 0, image.width,    image.height,     // source rectangle
+        //     0, 0, gElCanvas.width, gElCanvas.height); // destination rectangle
+        // gCtx.drawImage(image, 0, 0, cw, ch);
         if (callback) callback();
     };
     image.src = img;

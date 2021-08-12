@@ -1,11 +1,12 @@
 'use strict'
+const DB_IMAGES_KEY = 'dbImages'
 
-const gKeywords = { cats: 0, dogs: 0, animals: 0, people: 0, politics: 0, cute: 0, celebrity: 0, babies: 0, sport: 0 };
-const gImgs = [
+const gKeywords = { cats: 0, dogs: 0, animals: 0, people: 0, politics: 0, cute: 0, celebrity: 0, babies: 0, sport: 0, funny: 0 };
+let gImgs = [
     { id: 1, url: "img/memes/1.jpg", keywords: ['people', 'politics', 'celebrity'] },
     { id: 2, url: "img/memes/2.jpg", keywords: ['dogs', 'animals', 'cute'] },
     { id: 3, url: "img/memes/3.jpg", keywords: ['dogs', 'people', 'cute', 'babies'] },
-    { id: 4, url: "img/memes/4.jpg", keywords: ['cats', 'cute'] },
+    { id: 4, url: "img/memes/4.jpg", keywords: ['cats', 'cute', 'animals'] },
     { id: 5, url: "img/memes/5.jpg", keywords: ['people', 'cute', 'babies'] },
     { id: 6, url: "img/memes/6.jpg", keywords: ['people', 'celebrity'] },
     { id: 7, url: "img/memes/7.jpg", keywords: ['people', 'cute', 'babies'] },
@@ -20,8 +21,18 @@ const gImgs = [
     { id: 16, url: "img/memes/16.jpg", keywords: ['people', 'celebrity'] },
     { id: 17, url: "img/memes/17.jpg", keywords: ['people', 'celebrity', 'politics'] },
     { id: 18, url: "img/memes/18.jpg", keywords: ['celebrity'] },
+    { id: 19, url: "img/memes/19.jpg", keywords: ['people', 'celebrity'] },
+    { id: 20, url: "img/memes/20.jpg", keywords: ['people', 'celebrity'] },
+    { id: 21, url: "img/memes/21.jpg", keywords: ['people', 'funny'] },
+    { id: 22, url: "img/memes/22.jpg", keywords: ['people', 'celebrity'] },
+    { id: 23, url: "img/memes/23.jpg", keywords: ['cats', 'animals', 'funny'] },
 ]
 let gKeyword = '';
+initImages();
+
+function initImages() {
+    gImgs = loadFromStorage(DB_IMAGES_KEY) || gImgs;
+}
 
 function getImagesForDisplay() {
     return gImgs.filter(img => img.keywords.some(keyword => keyword.includes(gKeyword)));
@@ -38,4 +49,14 @@ function getKeywords() {
 
 function getImgSrcById(id) {
     return gImgs.find(img => img.id === id).url;
+}
+
+function addImage(img) {
+    gImgs.unshift({ id: gImgs[gImgs.length - 1].id + 1, url: img, keywords: [''] });
+    _saveImages();
+    return gImgs[gImgs.length - 1].id;
+}
+
+function _saveImages() {
+    saveToStorage(DB_IMAGES_KEY, gImgs);
 }

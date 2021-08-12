@@ -62,6 +62,10 @@
     content: "\f00d";
 }
 
+.fas.fa-upload::before {
+    content: "\f093";
+}
+
 /* BASE */
 
 html {
@@ -117,7 +121,6 @@ header {
 
 /* nav */
 nav {
-    height: 100%;
     width: 100%;
     position: absolute;
     left: 0;
@@ -127,7 +130,7 @@ nav {
 }
 
 .main-nav-open nav {
-    transform: translateY(100%);
+    transform: translateY(77%);
 }
 
 nav ul {
@@ -143,7 +146,7 @@ nav a {
     color: inherit;
     height: 100%;
     transition: 0.6s;
-    padding-inline-start: 10px;
+    padding: 10px;
 }
 
 nav a.selected {
@@ -203,6 +206,29 @@ main .imgs-gallery, .memes ul {
     gap: 20px;
     grid-template-columns: 1fr 1fr;
     margin:auto;
+}
+
+.imgs-gallery li:not(:first-child) {
+    align-self: center;
+}
+
+.imgs-gallery .upload {
+    color: #fff;
+    text-align: center;
+}
+
+.imgs-gallery label {
+    cursor: pointer;
+}
+
+.imgs-gallery [name=upload] {
+    position: absolute;
+    visibility: hidden;
+}
+
+.imgs-gallery .upload div {
+    margin-top: 0.5em;
+    font-size: 2.5em;
 }
 
 .imgs-gallery img {
@@ -535,6 +561,11 @@ div.dashboard {
     padding: 0;
 }
 
+/* IMAGE HELPERS */
+.img-fluid {
+    width: 100%;
+}
+
 /* rounded-corners */
 .rounded {
     border-radius: 0.5em;
@@ -554,6 +585,7 @@ div.dashboard {
         z-index: 2;
     }
     nav {
+        height: 100%;
         position: static;
         width: auto;
         transform: translateY(0);

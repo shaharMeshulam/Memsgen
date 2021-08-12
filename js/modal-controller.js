@@ -24,7 +24,7 @@ function onCloseModal() {
 
 function renderAboutModal() {
     return `<h2>Made By Shahar Meshulam</h2>
-        <img src="img/me.jpg"/>`;
+        <img class="img-fluid" src="img/me.jpg"/>`;
 }
 
 function renderShareModal() {

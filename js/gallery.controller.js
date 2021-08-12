@@ -32,7 +32,13 @@ function renderKeyWords() {
 }
 
 function renderGallery() {
-    document.querySelector('.imgs-gallery').innerHTML = getImagesForDisplay().map(img => {
+    const uploadNewHtmlStr = `<li class="bg-orange upload flex justify-center align-center direction-column">
+            <label for="upload">
+                Upload from your computer<div class="fas fa-upload"></div>
+                <input type="file" name="upload" id="upload" onchange="onLoadImageFromInput(event)">
+            </label>
+        </li>`
+    document.querySelector('.imgs-gallery').innerHTML = uploadNewHtmlStr + getImagesForDisplay().map(img => {
         return `<li onclick="onSelectImg(${img.id})"><img src="${img.url}"></li>`
     }).join('')
 }
@@ -56,4 +62,17 @@ function onToggleMoreKeywords() {
 function onSelectImg(imgId) {
     onSetPage('dashboard');
     onDashboardInit(imgId);
+}
+
+function onLoadImageFromInput(ev) {
+    const reader = new FileReader()
+
+    reader.onload = function (event) {
+        const img = new Image();
+        img.src = event.target.result;
+        const imgId = addImage(img.src);
+        img.onload = renderGallery();
+        
+    }
+    reader.readAsDataURL(ev.target.files[0])
 }
