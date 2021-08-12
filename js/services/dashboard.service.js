@@ -52,8 +52,8 @@ function changeSelectedLineIdx() {
 
 function moveLine(dx, dy) {
     if(!gMeme.lines[gMeme.selectedLineIdx]) return;
-    gMeme.lines[gMeme.selectedLineIdx].x = dx;
-    gMeme.lines[gMeme.selectedLineIdx].y = dy;
+    gMeme.lines[gMeme.selectedLineIdx].x += dx;
+    gMeme.lines[gMeme.selectedLineIdx].y += dy;
 }
 
 function changeFontSize(diff) {

@@ -6,7 +6,7 @@ let gElCanvas;
 let gCtx;
 let gIsDrag;
 let gLastEditWithoutRect;
-let gCanvasSize = {};
+let gStartPos;
 
 function onDashboardInit(selectedImgId, memeId = null) {
     initDashboard(selectedImgId);
@@ -35,15 +35,17 @@ function addTouchListeners() {
 function onMove(ev) {
     if (!gIsDrag) return;
     const pos = getEvPos(ev);
-    const dx = pos.x;
-    const dy = pos.y;
+    const dx = pos.x - gStartPos.x;
+    const dy = pos.y - gStartPos.y;
     moveLine(dx, dy);
+    gStartPos = pos;
     draw();
 }
 
 function onDown(ev) {
     ev.preventDefault();
     const { x, y } = getEvPos(ev);
+    gStartPos = {x , y};
     const lines = getLines();
     let selectedLineIdx = null;
     for (let i = 0; i < lines.length; i++) {
