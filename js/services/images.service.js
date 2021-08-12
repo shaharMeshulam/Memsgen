@@ -1,3 +1,5 @@
+'use strict'
+
 const gKeywords = { cats: 0, dogs: 0, animals: 0, people: 0, politics: 0, cute: 0, celebrity: 0, babies: 0, sport: 0 };
 const gImgs = [
     { id: 1, url: "img/memes/1.jpg", keywords: ['people', 'politics', 'celebrity'] },

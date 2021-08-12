@@ -1,3 +1,4 @@
+'use strict'
 
 function uploadImg(elCanvas) {
     const imgDataUrl = elCanvas.toDataURL("image/jpeg");
@@ -5,15 +6,9 @@ function uploadImg(elCanvas) {
     // A function to be called if request succeeds
     function onSuccess(uploadedImgUrl) {
         const encodedUploadedImgUrl = encodeURIComponent(uploadedImgUrl);
-        alert(`Your photo is available here: ${uploadedImgUrl}`);
-
-        const elShareButton = document.querySelector('.share');
+        const elShareButton = document.querySelector('.modal .share');
         elShareButton.querySelector('a').href = `https://www.facebook.com/sharer/sharer.php?u=${uploadedImgUrl}&t=${uploadedImgUrl}`;
         elShareButton.disabled = false;
-        // document.querySelector('.share-container').innerHTML = `
-        // <a class="btn" href="https://www.facebook.com/sharer/sharer.php?u=${encodedUploadedImgUrl}&t=${encodedUploadedImgUrl}" title="Share on Facebook" target="_blank" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=${uploadedImgUrl}&t=${uploadedImgUrl}'); return false;">
-        //    Share   
-        // </a>`
     }
     doUploadImg(imgDataUrl, onSuccess);
 }

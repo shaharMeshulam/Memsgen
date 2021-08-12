@@ -24,7 +24,7 @@
                         <a class="link-memes flex align-center" href="#" onclick="onSetPage('memes')">Memes</a>
                     </li>
                     <li>
-                        <a class="flex align-center" href="#">About</a>
+                        <a class="flex align-center" href="#" onclick="onShowModal('about')">About</a>
                     </li>
                 </ul>
             </nav>
@@ -124,8 +124,8 @@
                         <img src="img/stickers/2.png">
                         <img src="img/stickers/3.png">
                     </div>
-                    <button class="share rounded bg-orange">Share</button>
-                    <button class="save rounded bg-orange" onclick="draw(true)">Save</button>
+                    <button class="share rounded bg-orange" onclick="onShare()">Share</button>
+                    <button class="save rounded bg-orange" onclick="onSave()">Save</button>
                 </div>
             </div>
         </div>
@@ -141,8 +141,17 @@
         <img class="logo" src="img/LOGO.png">
         <small>all rights reserved 2019</small>
     </footer>
+    <div class="modal flex justify-center align-center">
+        <div class="screen" onclick="onCloseModal()"></div>
+        <div class="modal-container rounded">
+            <div class="close fas fa-times" onclick="onCloseModal()"></div>
+            <div class="modal-content"></div>
+        </div>
+    </div>
     <script src="js/utils.js"></script>
+    <script src="js/services/upload-service.js"></script>
     <script src="js/services/storage.service.js"></script>
+    <script src="js/modal-controller.js"></script>
     <script src="js/main-nav.controller.js"></script>
     <script src="js/services/saved-memes.service.js"></script>
     <script src="js/saved-memes.controller.js"></script>

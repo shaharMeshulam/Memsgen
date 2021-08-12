@@ -1,4 +1,5 @@
 'use strict'
+
 const DB_KEY = 'memesDb';
 let gMemes;
 savedMemesInit();

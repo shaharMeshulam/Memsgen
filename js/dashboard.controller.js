@@ -1,10 +1,11 @@
 'use strict'
+
 const gTouchEvs = ['touchstart', 'touchmove', 'touchend'];
 const MARGIN = 20;
 let gElCanvas;
 let gCtx;
 let gIsDrag;
-let gStartPos = {};
+let gLastEditWithoutRect;
 
 function onDashboardInit(selectedImgId, memeId = null) {
     initDashboard(selectedImgId);
@@ -14,7 +15,7 @@ function onDashboardInit(selectedImgId, memeId = null) {
     addMouseListeners();
     addTouchListeners();
     window.addEventListener('resize', onResize);
-    if (!memeId) renderImg(getImgSrcById(selectedImgId));
+    if (!memeId) draw();
     else onLoadMeme(memeId);
 }
 
@@ -47,9 +48,6 @@ function onDown(ev) {
     for (let i = 0; i < lines.length; i++) {
         const currLine = lines[i];
         let currLineX1 = null;
-        let currLineX2 = null;
-        let currLineY1 = null;
-        let currLineY2 = null
         switch (currLine.align) {
             case 'right':
                 currLineX1 = currLine.x - currLine.width - MARGIN;
@@ -60,9 +58,9 @@ function onDown(ev) {
             default:
                 currLineX1 = currLine.x - currLine.width / 2 - MARGIN
         }
-        currLineX2 = currLineX1 + currLine.width + MARGIN + MARGIN;
-        currLineY1 = currLine.y - currLine.size - MARGIN / 4;
-        currLineY2 = currLineY1 + currLine.size + MARGIN
+        let currLineX2 = currLineX1 + currLine.width + MARGIN + MARGIN;
+        let currLineY1 = currLine.y - currLine.size - MARGIN / 4;;
+        let currLineY2 = currLineY1 + currLine.size + MARGIN
         if (x > currLineX1 && x < currLineX2 && y > currLineY1 && y < currLineY2) {
             selectedLineIdx = i;
             break;
@@ -184,39 +182,56 @@ function onTextColorChange(colorValue) {
 }
 
 function onSave() {
-    const id = addMeme(getMeme(), gElCanvas.toDataURL());
+    const id = addMeme(getMeme(), gLastEditWithoutRect);
     setMemeId(id);
     renderMemes();
+    onShowModal('save');
 }
 
-function draw(isForSave = false) {
+function onShare() {
+    onShowModal('share');
+    uploadImg(gElCanvas);
+}
+
+function onDownloadCanvas(elLink) {
+    const data = gLastEditWithoutRect;
+    elLink.href = data;
+}
+
+function draw() {
     renderImg(getImgSrcById(getSelectedImgId()), () => {
         const lines = getLines();
         lines.forEach((line, idx) => {
             drawText(idx, line.txt, line.x, line.y, line.strokeColor, line.color, line.font, line.size, line.align)
         });
         // if i want to save the meme i need to hide the rect around the text, and after i save i return the rect.
-        if (!isForSave) drawLineSelectedRect();
-        else {
-            onSave();
-            draw();
-        }
+        // so i save "last edit" to use when save or download
+        gLastEditWithoutRect = gElCanvas.toDataURL();
+        drawLineSelectedRect();
     });
 }
 
 function drawLineSelectedRect() {
     var currLine = getSelectedLine();
     if (!currLine) return;
+    let lineX1;
     switch (currLine.align) {
         case 'right':
-            drawRect(currLine.x - currLine.width - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
+            lineX1 = currLine.x - currLine.width - MARGIN;
+            // drawRect(currLine.x - currLine.width - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
             break;
         case 'left':
-            drawRect(currLine.x - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
+            lineX1 = currLine.x - MARGIN
+            // drawRect(currLine.x - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
             break;
         default:
-            drawRect(currLine.x - currLine.width / 2 - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
+            lineX1 = currLine.x - currLine.width / 2 - MARGIN;
+        // drawRect(currLine.x - currLine.width / 2 - MARGIN, currLine.y - currLine.size - MARGIN / 4, currLine.width + MARGIN + MARGIN, currLine.size + MARGIN);
     }
+    let lineX2 = currLine.width + MARGIN + MARGIN;
+    let lineY1 = currLine.y - currLine.size - MARGIN / 4;
+    let lineY2 = currLine.size + MARGIN;
+    drawRect(lineX1, lineY1, lineX2, lineY2);
 }
 
 function renderImg(img, callback = null) {
