@@ -54,7 +54,7 @@ function getImgSrcById(id) {
 function addImage(img) {
     gImgs.unshift({ id: gImgs[gImgs.length - 1].id + 1, url: img, keywords: [''] });
     _saveImages();
-    return gImgs[gImgs.length - 1].id;
+    return gImgs[0].id;
 }
 
 function _saveImages() {

@@ -235,8 +235,6 @@ function drawLineSelectedRect() {
 function renderImg(img, callback = null) {
     var image = new Image();
     image.onload = function () {
-        // const ch = (gElCanvas.width * image.height) / image.width;
-        // const cw = (image.height * gElCanvas.width) / image.width
         const wrh = image.width / image.height;
         let newWidth = gElCanvas.width;
         let newHeight = newWidth / wrh;
@@ -244,12 +242,7 @@ function renderImg(img, callback = null) {
             newHeight = gElCanvas.height;
             newWidth = newHeight * wrh;
         }
-        // gElCanvas.height = newHeight;
-        // gElCanvas.width = newWidth;
         gCtx.drawImage(image, 0, 0, newWidth, newHeight);
-        // gCtx.drawImage(image, 0, 0, image.width,    image.height,     // source rectangle
-        //     0, 0, gElCanvas.width, gElCanvas.height); // destination rectangle
-        // gCtx.drawImage(image, 0, 0, cw, ch);
         if (callback) callback();
     };
     image.src = img;

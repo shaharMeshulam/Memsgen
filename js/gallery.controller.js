@@ -71,7 +71,10 @@ function onLoadImageFromInput(ev) {
         const img = new Image();
         img.src = event.target.result;
         const imgId = addImage(img.src);
-        img.onload = renderGallery();
+        img.onload = (() => {
+            renderGallery();
+            onSelectImg(imgId);
+        })();
         
     }
     reader.readAsDataURL(ev.target.files[0])
