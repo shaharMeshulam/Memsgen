@@ -5,19 +5,40 @@ const MARGIN = 20;
 let gElCanvas;
 let gCtx;
 let gIsDrag;
-let gLastEditWithoutRect;
+let gLatestSnapshootImg;
 let gStartPos;
+let gSelectedStickerId;
+let gTextFocus = false;
 
 function onDashboardInit(selectedImgId, memeId = null) {
     initDashboard(selectedImgId);
+    renderStickers();
     gElCanvas = document.querySelector('canvas');
     gCtx = gElCanvas.getContext('2d');
+    gSelectedStickerId = null;
+    gTextFocus = false;
     resizeCanvas();
     addMouseListeners();
     addTouchListeners();
     window.addEventListener('resize', onResize);
     if (!memeId) draw();
     else onLoadMeme(memeId);
+}
+
+function renderStickers() {
+    document.querySelector('.stickers').innerHTML = getStickers().map(sticker =>
+        `<img src="${sticker.url}" onclick="onStickerClicked(${sticker.id})">`).join('');
+}
+
+function onStickerClicked(stickerId) {
+    setSelectedLine(null);
+    draw();
+    renderSticker(getStickerById(stickerId), onAddSticker);
+}
+
+function onAddSticker(url, stickerX, stickerY, stickerWidth, stickerHeight) {
+    addSticker(url, stickerX, stickerY, stickerWidth, stickerHeight);
+    drawSelectedStickerRect();
 }
 
 function addMouseListeners() {
@@ -37,7 +58,7 @@ function onMove(ev) {
     const pos = getEvPos(ev);
     const dx = pos.x - gStartPos.x;
     const dy = pos.y - gStartPos.y;
-    moveLine(dx, dy);
+    move(dx, dy);
     gStartPos = pos;
     draw();
 }
@@ -45,8 +66,9 @@ function onMove(ev) {
 function onDown(ev) {
     ev.preventDefault();
     const { x, y } = getEvPos(ev);
-    gStartPos = {x , y};
-    const lines = getLines();
+    gStartPos = { x, y };
+    const meme = getMeme()
+    const lines = meme.lines;
     let selectedLineIdx = null;
     for (let i = 0; i < lines.length; i++) {
         const currLine = lines[i];
@@ -61,7 +83,7 @@ function onDown(ev) {
             default:
                 currLineX1 = currLine.x - currLine.width / 2 - MARGIN
         }
-        let currLineX2 = currLineX1 + currLine.width + MARGIN + MARGIN;
+        let currLineX2 = currLineX1 + currLine.width + MARGIN * 2;
         let currLineY1 = currLine.y - currLine.size - MARGIN / 4;;
         let currLineY2 = currLineY1 + currLine.size + MARGIN
         if (x > currLineX1 && x < currLineX2 && y > currLineY1 && y < currLineY2) {
@@ -69,7 +91,18 @@ function onDown(ev) {
             break;
         }
     }
+    const stickers = meme.stickers;
+    let selectedStickerIdx = null;
+    for (let i = 0; i < stickers.length; i++) {
+        const currSticker = stickers[i];
+        if (x > currSticker.x - MARGIN && x < currSticker.x + currSticker.width + MARGIN &&
+            y > currSticker.y - MARGIN && y < currSticker.y + currSticker.height + MARGIN) {
+            selectedStickerIdx = i;
+            break;
+        }
+    }
     setSelectedLine(selectedLineIdx);
+    setSelectedSticker(selectedStickerIdx);
     if (!isNaN(selectedLineIdx)) gIsDrag = true
     else gIsDrag = false;
     draw();
@@ -115,6 +148,7 @@ function resizeCanvas() {
 }
 
 function updateText() {
+    if(!getSelectedLine()) return;
     document.querySelector('[name=txt]').value = getSelectedLine().txt;
 }
 
@@ -125,7 +159,7 @@ function onTextChange(txt) {
 }
 
 function onChangeTextFromKeyup(ev) {
-    if (!getSelectedLine()) return;
+    if (!getSelectedLine() || gTextFocus) return;
     var elInput = document.querySelector('[name=txt]');
     if (ev.key === 'Backspace') {
         elInput.value = elInput.value.substr(0, elInput.value.length - 1);
@@ -133,9 +167,18 @@ function onChangeTextFromKeyup(ev) {
     onTextChange(elInput.value);
 }
 
+function onTextFocus() {
+    gTextFocus = true;
+}
+
+function onTextBlur() {
+    gTextFocus = false
+}
+
 function onChangeLine() {
     changeSelectedLineIdx();
     if (!getSelectedLine()) return;
+    setSelectedSticker(null);
     updateText();
     draw();
 }
@@ -146,11 +189,12 @@ function onAddTxt() {
     const textColor = document.querySelector('[name=text-color]').value;
     const textFont = document.querySelector('[name=font').value;
     addTxt(text, gElCanvas.width, gElCanvas.height, textStrokeColor, textColor, textFont);
+    setSelectedSticker(null);
     draw();
 }
 
-function onRemoveLine() {
-    removeLine();
+function onRemove() {
+    remove();
     draw();
 }
 
@@ -185,7 +229,7 @@ function onTextColorChange(colorValue) {
 }
 
 function onSave() {
-    const id = addMeme(getMeme(), gLastEditWithoutRect);
+    const id = addMeme(getMeme(), gLatestSnapshootImg);
     setMemeId(id);
     renderMemes();
     onShowModal('save');
@@ -193,24 +237,29 @@ function onSave() {
 
 function onShare() {
     onShowModal('share');
-    uploadImg(gElCanvas);
+    uploadImg(gLatestSnapshootImg);
 }
 
 function onDownloadCanvas(elLink) {
-    const data = gLastEditWithoutRect;
+    const data = gLatestSnapshootImg;
     elLink.href = data;
 }
 
 function draw() {
     renderImg(getImgSrcById(getSelectedImgId()), () => {
-        const lines = getLines();
-        lines.forEach((line, idx) => {
+        const meme = getMeme();
+        meme.lines.forEach((line, idx) =>
             drawText(idx, line.txt, line.x, line.y, line.strokeColor, line.color, line.font, line.size, line.align)
-        });
+        );
+        meme.stickers.forEach(sticker => renderSticker(sticker));
         // if i want to save the meme i need to hide the rect around the text, and after i save i return the rect.
-        // so i save "last edit" to use when save or download
-        gLastEditWithoutRect = gElCanvas.toDataURL();
-        drawLineSelectedRect();
+        // so i save "lastest snapshoot" to use when save or download or share
+        // i allso need to delay the rects draw & the snapshoot so i push it the the end of the callstack so the draw will be after the sticker is renderd 
+        gLatestSnapshootImg = gElCanvas.toDataURL();
+        setTimeout(() => {
+            drawLineSelectedRect();
+            drawSelectedStickerRect();
+        },0);
     });
 }
 
@@ -228,14 +277,20 @@ function drawLineSelectedRect() {
         default:
             lineX1 = currLine.x - currLine.width / 2 - MARGIN;
     }
-    let lineX2 = currLine.width + MARGIN + MARGIN;
+    let lineX2 = currLine.width + MARGIN * 2;
     let lineY1 = currLine.y - currLine.size - MARGIN / 4;
     let lineY2 = currLine.size + MARGIN;
     drawRect(lineX1, lineY1, lineX2, lineY2);
 }
 
+function drawSelectedStickerRect() {
+    const currSticker = getSelectedSticker();
+    if (!currSticker) return;
+    drawRect(currSticker.x - MARGIN, currSticker.y - MARGIN, currSticker.width + MARGIN * 2, currSticker.height + MARGIN * 2);
+}
+
 function renderImg(img, callback = null) {
-    var image = new Image();
+    const image = new Image();
     image.onload = function () {
         const wrh = image.width / image.height;
         let newWidth = gElCanvas.width;
@@ -248,6 +303,32 @@ function renderImg(img, callback = null) {
         if (callback) callback();
     };
     image.src = img;
+}
+
+function renderSticker(sticker, callback = null) {
+    const image = new Image();
+    const stickerImage = sticker.url;
+    let stickerX;
+    let stickerY;
+    let stickerWidth;
+    let stickerHeight;
+    image.onload = function () {
+        if (callback) {
+            stickerX = gElCanvas.width / 2 - image.width / 2;
+            stickerY = gElCanvas.height / 2 - image.height / 2;
+            stickerWidth = image.width;
+            stickerHeight = image.height;
+            callback(sticker.url, stickerX, stickerY, stickerWidth, stickerHeight);
+        } else {
+            stickerX = sticker.x;
+            stickerY = sticker.y;
+            stickerWidth = sticker.width;
+            stickerHeight = sticker.height;
+        }
+        gCtx.drawImage(image, stickerX, stickerY, image.width, image.height);
+        gLatestSnapshootImg = gElCanvas.toDataURL();
+    };
+    image.src = stickerImage;
 }
 
 function drawText(lineIdx, txt, x, y, strokeColor, color, font, size, align) {

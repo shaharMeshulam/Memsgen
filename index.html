@@ -36,11 +36,15 @@
                 onkeyup="onSearch(this.value)">
             <datalist id="keywords"></datalist>
             <div class="keywords">
-                <ul class="clear-list flex align-center justify-end"></ul>
+                <ul class="clear-list flex align-center justify-end">
+                    <!-- KEYWORDS ARE RENDERED -->
+                </ul>
             </div>
         </section>
         <main class="bg-gray">
-            <ul class="imgs-gallery clear-list main-layout grid"></ul>
+            <ul class="imgs-gallery clear-list main-layout grid">
+                <!-- IMAGES ARE RENDERED -->
+            </ul>
         </main>
         <section class="about">
             <div class="about-container flex justify-center align-center direction-column main-layout">
@@ -74,14 +78,14 @@
             </div>
             <div class="controls flex justify-center">
                 <div class="controls-container grid">
-                    <input type="text" name="txt" onkeyup="onTextChange(this.value)" class="rounded bg-white">
+                    <input type="text" name="txt" class="rounded bg-white" onkeyup="onTextChange(this.value)" onfocus="onTextFocus()" onblur="onTextBlur()">
                     <button class="up-and-down rounded bg-white" onclick="onChangeLine()">
                         <img class="image-fluid" src="img/ICONS/up-and-down-opposite-double-arrows-side-by-side.png">
                     </button>
                     <button class="add rounded bg-white" onclick="onAddTxt()">
                         <img class="image-fluid" src="img/ICONS/add.png">
                     </button>
-                    <button class="trash rounded bg-white" onclick="onRemoveLine()">
+                    <button class="trash rounded bg-white" onclick="onRemove()">
                         <img class="image-fluid" src="img/ICONS/trash.png">
                     </button>
                     <button class="increase-font rounded bg-white" onclick="onChangeFontSize(5)">
@@ -119,10 +123,8 @@
                             <img class="image-fluid" src="img/ICONS/paint-board-and-brush.png">
                         </label>
                     </button>
-                    <div class="stickers flex rounded bg-white">
-                        <img src="img/stickers/1.png">
-                        <img src="img/stickers/2.png">
-                        <img src="img/stickers/3.png">
+                    <div class="stickers flex rounded bg-white justify-between">
+                       <!-- STIKERS ARE RENDERED -->
                     </div>
                     <button class="share rounded bg-orange" onclick="onShare()">Share</button>
                     <button class="save rounded bg-orange" onclick="onSave()">Save</button>
@@ -134,6 +136,7 @@
         <div class="memes-container main-layout">
             <h2></h2>
             <ul class="clear-list grid">
+                <!-- MEMES ARE RENDERED -->
             </ul>
         </div>
     </div>

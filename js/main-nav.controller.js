@@ -18,6 +18,7 @@ function onSetPage(pageName) {
             document.querySelector('.link-gallery').classList.add('selected')
             break;
         case 'memes':
+            savedMemesInit();
             document.querySelector('.gallery').hidden = true;
             document.querySelector('.dashboard').style.display = 'none';
             document.querySelector('.memes').hidden = false;

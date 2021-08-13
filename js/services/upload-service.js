@@ -1,11 +1,8 @@
 'use strict'
 
-function uploadImg(elCanvas) {
-    const imgDataUrl = elCanvas.toDataURL("image/jpeg");
-
+function uploadImg(imgDataUrl) {
     // A function to be called if request succeeds
     function onSuccess(uploadedImgUrl) {
-        const encodedUploadedImgUrl = encodeURIComponent(uploadedImgUrl);
         const elShareButton = document.querySelector('.modal .share');
         elShareButton.querySelector('a').href = `https://www.facebook.com/sharer/sharer.php?u=${uploadedImgUrl}&t=${uploadedImgUrl}`;
         elShareButton.disabled = false;
