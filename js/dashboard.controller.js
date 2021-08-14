@@ -1,7 +1,8 @@
 'use strict'
 
-const gTouchEvs = ['touchstart', 'touchmove', 'touchend'];
 const MARGIN = 20;
+const SIZING_CIRCLE_RADIUS = 10;
+const gTouchEvs = ['touchstart', 'touchmove', 'touchend'];
 let gElCanvas;
 let gCtx;
 let gIsDrag;
@@ -9,6 +10,7 @@ let gLatestSnapshootImg;
 let gStartPos;
 let gSelectedStickerId;
 let gTextFocus = false;
+let gSizingCircleSelected = false;
 
 function onDashboardInit(selectedImgId, memeId = null) {
     initDashboard(selectedImgId);
@@ -17,6 +19,7 @@ function onDashboardInit(selectedImgId, memeId = null) {
     gCtx = gElCanvas.getContext('2d');
     gSelectedStickerId = null;
     gTextFocus = false;
+    gSizingCircleSelected = false;
     resizeCanvas();
     addMouseListeners();
     addTouchListeners();
@@ -60,7 +63,9 @@ function onMove(ev) {
     const pos = getEvPos(ev);
     const dx = pos.x - gStartPos.x;
     const dy = pos.y - gStartPos.y;
-    move(dx, dy);
+    if (gSizingCircleSelected) {
+        resize(dx, dy);
+    } else move(dx, dy);
     gStartPos = pos;
     draw();
 }
@@ -68,44 +73,41 @@ function onMove(ev) {
 function onDown(ev) {
     ev.preventDefault();
     gStartPos = getEvPos(ev);
-    const clickedLineIdx = getClickedLineIdx()
-    if (clickedLineIdx >= 0) {
-        setSelectedLine(clickedLineIdx);
-        setSelectedSticker(null)
-        updateText();
+    if (isSizingCircleClicked(gStartPos) && (getSelectedLine() || getSelectedSticker())) {
+        gSizingCircleSelected = true;
         gIsDrag = true;
-        draw();
-        return;
     }
-    const clickedStickerIdx = getClickedStickerIdx();
-    if (clickedStickerIdx >= 0) {
-        setSelectedSticker(clickedStickerIdx);
-        setSelectedLine(null);
-        gIsDrag = true;
-        draw();
-        return
+    else {
+        const clickedLineIdx = getClickedLineIdx()
+        if (clickedLineIdx >= 0) {
+            setSelectedLine(clickedLineIdx);
+            setSelectedSticker(null)
+            updateText();
+            gIsDrag = true;
+            draw();
+            return;
+        }
+        const clickedStickerIdx = getClickedStickerIdx();
+        if (clickedStickerIdx >= 0) {
+            setSelectedSticker(clickedStickerIdx);
+            setSelectedLine(null);
+            gIsDrag = true;
+            draw();
+            return
+        }
     }
 }
 
 function onUp(ev) {
     gIsDrag = false;
+    gSizingCircleSelected = false;
 }
 
 function getClickedLineIdx() {
     const lines = getMeme().lines;
     for (let i = 0; i < lines.length; i++) {
         const currLine = lines[i];
-        let currLineX1 = null;
-        switch (currLine.align) {
-            case 'right':
-                currLineX1 = currLine.x - currLine.width - MARGIN;
-                break;
-            case 'left':
-                currLineX1 = currLine.x - MARGIN;
-                break;
-            default:
-                currLineX1 = currLine.x - currLine.width / 2 - MARGIN
-        }
+        let currLineX1 = getLineX(currLine);
         let currLineX2 = currLineX1 + currLine.width + MARGIN * 2;
         let currLineY1 = currLine.y - currLine.size - MARGIN / 4;;
         let currLineY2 = currLineY1 + currLine.size + MARGIN
@@ -125,6 +127,22 @@ function getClickedStickerIdx() {
             return i;
         }
     }
+}
+
+function isSizingCircleClicked(clickedPos) {
+    const selectedSticker = getSelectedSticker();
+    const selectedLine = getSelectedLine();
+    let circleX;
+    let circleY;
+    if (selectedSticker) {
+        circleX = selectedSticker.x + selectedSticker.width + MARGIN;
+        circleY = selectedSticker.y + selectedSticker.height + MARGIN;
+    } else {
+        circleY = selectedLine.y + MARGIN;
+        circleX = getLineX(selectedLine) + selectedLine.width + MARGIN *2;
+    }
+    let distance = Math.sqrt((circleX - clickedPos.x) ** 2 + (circleY - clickedPos.y) ** 2);
+    return distance <= SIZING_CIRCLE_RADIUS;
 }
 
 function getEvPos(ev) {
@@ -294,6 +312,7 @@ function draw(shareSaveCallback) {
         if (!shareSaveCallback) {
             drawLineSelectedRect();
             drawSelectedStickerRect();
+            drawSizingCircle();
         }
         // if there are no sticker call the save / share function (if there are stickers the callback is called from renderStickr()
         if (!meme.stickers.length && shareSaveCallback) {
@@ -306,17 +325,7 @@ function draw(shareSaveCallback) {
 function drawLineSelectedRect() {
     var currLine = getSelectedLine();
     if (!currLine) return;
-    let lineX1;
-    switch (currLine.align) {
-        case 'right':
-            lineX1 = currLine.x - currLine.width - MARGIN;
-            break;
-        case 'left':
-            lineX1 = currLine.x - MARGIN
-            break;
-        default:
-            lineX1 = currLine.x - currLine.width / 2 - MARGIN;
-    }
+    let lineX1 = getLineX(currLine);
     let lineX2 = currLine.width + MARGIN * 2;
     let lineY1 = currLine.y - currLine.size - MARGIN / 4;
     let lineY2 = currLine.size + MARGIN;
@@ -327,6 +336,32 @@ function drawSelectedStickerRect() {
     const currSticker = getSelectedSticker();
     if (!currSticker) return;
     drawRect(currSticker.x - MARGIN, currSticker.y - MARGIN, currSticker.width + MARGIN * 2, currSticker.height + MARGIN * 2);
+}
+
+function drawSizingCircle() {
+    let selectedLine = getSelectedLine();
+    let selectedSticker = getSelectedSticker();
+    if (selectedSticker) {
+        drawArc(selectedSticker.x + selectedSticker.width + MARGIN, selectedSticker.y + selectedSticker.height + MARGIN);
+    } else if (selectedLine) {
+        let currLineX = getLineX(selectedLine);
+        drawArc(currLineX + selectedLine.width + MARGIN*2, selectedLine.y + MARGIN);
+    }
+}
+
+function getLineX(line) {
+    let currLineX;
+    switch (line.align) {
+        case 'right':
+            currLineX = line.x - line.width - MARGIN;
+            break;
+        case 'left':
+            currLineX = line.x - MARGIN;
+            break;
+        default:
+            currLineX = line.x - line.width / 2 - MARGIN
+    }
+    return currLineX;
 }
 
 function renderImg(img, callback = null) {
@@ -365,7 +400,7 @@ function renderSticker(sticker, onLoadCallback = null, shareSaveCallback) {
             stickerWidth = sticker.width;
             stickerHeight = sticker.height;
         }
-        gCtx.drawImage(image, stickerX, stickerY, image.width, image.height);
+        gCtx.drawImage(image, stickerX, stickerY, stickerWidth, stickerHeight);
         if (shareSaveCallback) {
             gLatestSnapshootImg = gElCanvas.toDataURL();
             shareSaveCallback();
@@ -392,5 +427,17 @@ function drawRect(x, y, x1, y1, borderColor = '#00ff00') {
     gCtx.rect(x, y, x1, y1);
     gCtx.strokeStyle = borderColor;
     gCtx.stroke();
+    gCtx.restore();
+}
+
+function drawArc(x, y, size = SIZING_CIRCLE_RADIUS, color = 'blue') {
+    gCtx.save();
+    gCtx.beginPath();
+    gCtx.lineWidth = '6'
+    gCtx.arc(x, y, size, 0, 2 * Math.PI);
+    gCtx.strokeStyle = 'white';
+    gCtx.stroke();
+    gCtx.fillStyle = color;
+    gCtx.fill();
     gCtx.restore();
 }

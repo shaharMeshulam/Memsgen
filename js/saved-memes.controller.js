@@ -17,7 +17,7 @@ function renderMemes() {
                     <img src="${memes[memeId].thumb}">
                     <div class="actions">
                         <button class="rounded bg-red" onclick="onRemoveMeme('${memeId}')" data-trans="remove">${getTrans('remove')}</button>
-                        <button class="rounded bg-orange" onclick="onEditMeme('${memeId}')" data-trans="edit">${getTrans('edit')}Edit</button>
+                        <button class="rounded bg-orange" onclick="onEditMeme('${memeId}')" data-trans="edit">${getTrans('edit')}</button>
                     </div>
                 </li>`;
         }

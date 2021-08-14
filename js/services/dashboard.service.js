@@ -87,6 +87,17 @@ function move(dx, dy) {
     }
 }
 
+function resize(dx, dy) {
+    const selectedSticker = getSelectedSticker();
+    const selectedLine = getSelectedLine();
+    if(selectedLine) {
+        selectedLine.size += dx;
+    }else if(selectedSticker) {
+        selectedSticker.width += dx;
+        selectedSticker.height += dy;
+    }
+}
+
 function changeFontSize(diff) {
     gMeme.lines[gMeme.selectedLineIdx].size += diff;
 }
