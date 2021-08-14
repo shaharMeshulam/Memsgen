@@ -5,7 +5,6 @@ function uploadImg(imgDataUrl) {
     function onSuccess(uploadedImgUrl) {
         const elShareButton = document.querySelector('.modal .share');
         elShareButton.querySelector('a').href = `https://www.facebook.com/sharer/sharer.php?u=${uploadedImgUrl}&t=${uploadedImgUrl}`;
-        elShareButton.disabled = false;
     }
     doUploadImg(imgDataUrl, onSuccess);
 }

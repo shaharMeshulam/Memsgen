@@ -142,7 +142,7 @@ function getMouseOnLineId(mousePos) {
     const lines = gMeme.lines;
     for (let i = 0; i < lines.length; i++) {
         const currLine = lines[i];
-        let currLineX1 = getLineX(currLine);
+        let currLineX1 = getSelectedLineX();
         let currLineX2 = currLineX1 + currLine.width + MARGIN * 2;
         let currLineY1 = currLine.y - currLine.size - MARGIN / 4;;
         let currLineY2 = currLineY1 + currLine.size + MARGIN
