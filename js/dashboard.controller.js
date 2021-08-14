@@ -21,8 +21,10 @@ function onDashboardInit(selectedImgId, memeId = null) {
     addMouseListeners();
     addTouchListeners();
     window.addEventListener('resize', onResize);
-    if (!memeId) draw();
-    else onLoadMeme(memeId);
+    if (!memeId) {
+        draw();
+        document.querySelector('[name=txt]').value = '';
+    } else onLoadMeme(memeId);
 }
 
 function renderStickers() {
@@ -38,7 +40,7 @@ function onStickerClicked(stickerId) {
 
 function onAddSticker(url, stickerX, stickerY, stickerWidth, stickerHeight) {
     addSticker(url, stickerX, stickerY, stickerWidth, stickerHeight);
-    drawSelectedStickerRect();
+    draw();
 }
 
 function addMouseListeners() {
@@ -54,7 +56,7 @@ function addTouchListeners() {
 }
 
 function onMove(ev) {
-    if (!gIsDrag) return;
+    if (!gIsDrag || !getSelectedLine() && !getSelectedSticker()) return;
     const pos = getEvPos(ev);
     const dx = pos.x - gStartPos.x;
     const dy = pos.y - gStartPos.y;
@@ -65,11 +67,32 @@ function onMove(ev) {
 
 function onDown(ev) {
     ev.preventDefault();
-    const { x, y } = getEvPos(ev);
-    gStartPos = { x, y };
-    const meme = getMeme()
-    const lines = meme.lines;
-    let selectedLineIdx = null;
+    gStartPos = getEvPos(ev);
+    const clickedLineIdx = getClickedLineIdx()
+    if (clickedLineIdx >= 0) {
+        setSelectedLine(clickedLineIdx);
+        setSelectedSticker(null)
+        updateText();
+        gIsDrag = true;
+        draw();
+        return;
+    }
+    const clickedStickerIdx = getClickedStickerIdx();
+    if (clickedStickerIdx >= 0) {
+        setSelectedSticker(clickedStickerIdx);
+        setSelectedLine(null);
+        gIsDrag = true;
+        draw();
+        return
+    }
+}
+
+function onUp(ev) {
+    gIsDrag = false;
+}
+
+function getClickedLineIdx() {
+    const lines = getMeme().lines;
     for (let i = 0; i < lines.length; i++) {
         const currLine = lines[i];
         let currLineX1 = null;
@@ -86,30 +109,22 @@ function onDown(ev) {
         let currLineX2 = currLineX1 + currLine.width + MARGIN * 2;
         let currLineY1 = currLine.y - currLine.size - MARGIN / 4;;
         let currLineY2 = currLineY1 + currLine.size + MARGIN
-        if (x > currLineX1 && x < currLineX2 && y > currLineY1 && y < currLineY2) {
-            selectedLineIdx = i;
-            break;
+        if (gStartPos.x > currLineX1 && gStartPos.x < currLineX2 && gStartPos.y > currLineY1 && gStartPos.y < currLineY2) {
+            return i;
         }
     }
-    const stickers = meme.stickers;
-    let selectedStickerIdx = null;
-    for (let i = 0; i < stickers.length; i++) {
-        const currSticker = stickers[i];
-        if (x > currSticker.x - MARGIN && x < currSticker.x + currSticker.width + MARGIN &&
-            y > currSticker.y - MARGIN && y < currSticker.y + currSticker.height + MARGIN) {
-            selectedStickerIdx = i;
-            break;
-        }
-    }
-    setSelectedLine(selectedLineIdx);
-    setSelectedSticker(selectedStickerIdx);
-    if (!isNaN(selectedLineIdx)) gIsDrag = true
-    else gIsDrag = false;
-    draw();
+    return -1;
 }
 
-function onUp(ev) {
-    gIsDrag = false;
+function getClickedStickerIdx() {
+    const stickers = getMeme().stickers;
+    for (let i = 0; i < stickers.length; i++) {
+        const currSticker = stickers[i];
+        if (gStartPos.x > currSticker.x - MARGIN && gStartPos.x < currSticker.x + currSticker.width + MARGIN &&
+            gStartPos.y > currSticker.y - MARGIN && gStartPos.y < currSticker.y + currSticker.height + MARGIN) {
+            return i;
+        }
+    }
 }
 
 function getEvPos(ev) {
@@ -130,7 +145,8 @@ function getEvPos(ev) {
 
 function onLoadMeme(memeId) {
     loadMeme(memeId);
-    updateText();
+    if (getSelectedLine()) updateText();
+    else document.querySelector('[name=txt]').value = '';
     draw();
 }
 
@@ -148,7 +164,7 @@ function resizeCanvas() {
 }
 
 function updateText() {
-    if(!getSelectedLine()) return;
+    if (!getSelectedLine()) return;
     document.querySelector('[name=txt]').value = getSelectedLine().txt;
 }
 
@@ -194,6 +210,7 @@ function onAddTxt() {
 }
 
 function onRemove() {
+    if (!getSelectedLine() && !getSelectedSticker()) return;
     remove();
     draw();
 }
@@ -229,15 +246,29 @@ function onTextColorChange(colorValue) {
 }
 
 function onSave() {
+    draw(save);
+}
+
+function save() {
     const id = addMeme(getMeme(), gLatestSnapshootImg);
     setMemeId(id);
     renderMemes();
     onShowModal('save');
+    // restore rect around selected text / sticker
+    drawLineSelectedRect();
+    drawSelectedStickerRect();
 }
 
 function onShare() {
+    draw(share)
+}
+
+function share() {
     onShowModal('share');
     uploadImg(gLatestSnapshootImg);
+    // restore rect around selected text / sticker
+    drawLineSelectedRect();
+    drawSelectedStickerRect();
 }
 
 function onDownloadCanvas(elLink) {
@@ -245,21 +276,30 @@ function onDownloadCanvas(elLink) {
     elLink.href = data;
 }
 
-function draw() {
+function draw(shareSaveCallback) {
     renderImg(getImgSrcById(getSelectedImgId()), () => {
         const meme = getMeme();
         meme.lines.forEach((line, idx) =>
             drawText(idx, line.txt, line.x, line.y, line.strokeColor, line.color, line.font, line.size, line.align)
         );
-        meme.stickers.forEach(sticker => renderSticker(sticker));
-        // if i want to save the meme i need to hide the rect around the text, and after i save i return the rect.
-        // so i save "lastest snapshoot" to use when save or download or share
-        // i allso need to delay the rects draw & the snapshoot so i push it the the end of the callstack so the draw will be after the sticker is renderd 
-        gLatestSnapshootImg = gElCanvas.toDataURL();
-        setTimeout(() => {
+        meme.stickers.forEach((sticker, idx) => {
+            if (idx === meme.stickers.length - 1) {
+                // if the sticker is last i want to save, if its not last so dont save yet
+                renderSticker(sticker, null, shareSaveCallback);
+            } else {
+                renderSticker(sticker)
+            }
+        });
+        // if i want to save the meme i need to hide the rect around the text, and after i save i return the rect. (in save function)
+        if (!shareSaveCallback) {
             drawLineSelectedRect();
             drawSelectedStickerRect();
-        },0);
+        }
+        // if there are no sticker call the save / share function (if there are stickers the callback is called from renderStickr()
+        if (!meme.stickers.length && shareSaveCallback) {
+            gLatestSnapshootImg = gElCanvas.toDataURL();
+            shareSaveCallback();
+        }
     });
 }
 
@@ -305,7 +345,7 @@ function renderImg(img, callback = null) {
     image.src = img;
 }
 
-function renderSticker(sticker, callback = null) {
+function renderSticker(sticker, onLoadCallback = null, shareSaveCallback) {
     const image = new Image();
     const stickerImage = sticker.url;
     let stickerX;
@@ -313,12 +353,12 @@ function renderSticker(sticker, callback = null) {
     let stickerWidth;
     let stickerHeight;
     image.onload = function () {
-        if (callback) {
+        if (onLoadCallback) {
             stickerX = gElCanvas.width / 2 - image.width / 2;
             stickerY = gElCanvas.height / 2 - image.height / 2;
             stickerWidth = image.width;
             stickerHeight = image.height;
-            callback(sticker.url, stickerX, stickerY, stickerWidth, stickerHeight);
+            onLoadCallback(sticker.url, stickerX, stickerY, stickerWidth, stickerHeight);
         } else {
             stickerX = sticker.x;
             stickerY = sticker.y;
@@ -326,7 +366,10 @@ function renderSticker(sticker, callback = null) {
             stickerHeight = sticker.height;
         }
         gCtx.drawImage(image, stickerX, stickerY, image.width, image.height);
-        gLatestSnapshootImg = gElCanvas.toDataURL();
+        if (shareSaveCallback) {
+            gLatestSnapshootImg = gElCanvas.toDataURL();
+            shareSaveCallback();
+        }
     };
     image.src = stickerImage;
 }

@@ -7,7 +7,8 @@ function onSavedMemesInit() {
 function renderMemes() {
     const memes = getMemes()
     if (!Object.keys(memes).length) {
-        document.querySelector('.memes h2').innerText = 'You didn`t saved any memes yet';
+        document.querySelector('.memes ul').innerHTML = '';
+        document.querySelector('.memes h2').innerText = getTrans('dont-have-memes');
     } else {
         document.querySelector('.memes h2').innerText = '';
         let strHtml = '';
@@ -15,8 +16,8 @@ function renderMemes() {
             strHtml += `<li class="meme">
                     <img src="${memes[memeId].thumb}">
                     <div class="actions">
-                        <button class="rounded bg-red" onclick="onRemoveMeme('${memeId}')">Remove</button>
-                        <button class="rounded bg-orange" onclick="onEditMeme('${memeId}')">Edit</button>
+                        <button class="rounded bg-red" onclick="onRemoveMeme('${memeId}')" data-trans="remove">${getTrans('remove')}</button>
+                        <button class="rounded bg-orange" onclick="onEditMeme('${memeId}')" data-trans="edit">${getTrans('edit')}Edit</button>
                     </div>
                 </li>`;
         }

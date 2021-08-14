@@ -24,19 +24,20 @@ function renderKeyWords() {
     for (let keyword in keyWords) {
         count++;
         if (count > 5 && !gIsMoreKeywords) break;
-        strHtml += `<li style="font-size: calc(1em + ${keyWords[keyword]}em)" onclick="onKeywordClick('${keyword}')">${keyword}</li>`;
+        strHtml += `<li style="font-size: calc(1em + ${keyWords[keyword]}em)" onclick="onKeywordClick('${keyword}')" data-trans="${keyword}">${getTrans(keyword)}</li>`;
     }
-    const str = gIsMoreKeywords ? 'Less...' : 'More...'
-    strHtml += `<li onclick="onToggleMoreKeywords()">${str}</li>`
+    const str = gIsMoreKeywords ? `${getTrans('less...')}` : `${getTrans('more...')}`;
+    strHtml += `<li onclick="onToggleMoreKeywords()" data-trans="${str}">${str}</li>`
     document.querySelector('.keywords ul').innerHTML = strHtml;
 }
 
 function renderGallery() {
     const uploadNewHtmlStr = `<li class="bg-orange upload flex justify-center align-center direction-column">
             <label for="upload">
-                Upload from your computer<div class="fas fa-upload"></div>
-                <input type="file" name="upload" id="upload" onchange="onLoadImageFromInput(event)">
+                <span data-trans="upload">Upload from your computer</span>
+                <div class="fas fa-upload"></div>
             </label>
+            <input type="file" name="upload" id="upload" onchange="onLoadImageFromInput(event)">
         </li>`
     document.querySelector('.imgs-gallery').innerHTML = uploadNewHtmlStr + getImagesForDisplay().map(img => {
         return `<li onclick="onSelectImg(${img.id})"><img src="${img.url}"></li>`

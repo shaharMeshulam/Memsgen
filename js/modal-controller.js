@@ -23,13 +23,13 @@ function onCloseModal() {
 }
 
 function renderAboutModal() {
-    return `<h2>Made By Shahar Meshulam</h2>
+    return `<h2 data-trans="made-by">${getTrans('made-by')}</h2>
         <img class="img-fluid" src="img/me.jpg"/>`;
 }
 
 function renderShareModal() {
-    return `<button class="share rounded bg-orange"><a href="#" target="_black">Share</a></button>
-        <button class="rounded bg-orange"><a href="#" download="myMeme" onclick="onDownloadCanvas(this)">Download</button>`;
+    return `<button class="share rounded bg-orange"><a href="#" target="_black" data-trans="share">${getTrans('share')}</a></button>
+        <button class="rounded bg-orange"><a href="#" download="myMeme" onclick="onDownloadCanvas(this)" data-trans="download">${getTrans('download')}</button>`;
 }
 
 function renderOnSaveModal() {

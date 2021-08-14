@@ -17,14 +17,21 @@
             <button class="fas fa-bars btn-menu" onclick="onToggleMenu()"></button>
             <nav class="bg-orange">
                 <ul class="main-nav clear-list flex direction-column color-white">
-                    <li>
-                        <a class="link-gallery flex align-center selected" href="#" onclick="onSetPage('gallery'); onToggleMenu()">Gallery</a>
+                    <li class="nav-item flex align-center">
+                        <label for="lang" data-trans="language">Language:</label>
+                        <select name="lang" id="lang" onchange="onSetLang(this.value)">
+                            <option value="en">English</option>
+                            <option value="he">עברית</option>
+                        </select>
                     </li>
                     <li>
-                        <a class="link-memes flex align-center" href="#" onclick="onSetPage('memes'); onToggleMenu()">Memes</a>
+                        <a class="link-gallery flex align-center selected" href="#" onclick="onSetPage('gallery'); onToggleMenu()" data-trans="gallery">Gallery</a>
                     </li>
                     <li>
-                        <a class="flex align-center" href="#" onclick="onShowModal('about'); onToggleMenu()">About</a>
+                        <a class="link-memes flex align-center" href="#" onclick="onSetPage('memes'); onToggleMenu()" data-trans="memes">Memes</a>
+                    </li>
+                    <li>
+                        <a class="flex align-center" href="#" onclick="onShowModal('about'); onToggleMenu()" data-trans="about">About</a>
                     </li>
                 </ul>
             </nav>
@@ -33,7 +40,7 @@
     <div class="gallery">
         <section class="search flex justify-center align-center direction-column main-layout">
             <input type="text" name="search" placeholder="Enter search keyword" list="keywords"
-                onkeyup="onSearch(this.value)">
+                onkeyup="onSearch(this.value)" data-trans="searchPlaceholder">
             <datalist id="keywords"></datalist>
             <div class="keywords">
                 <ul class="clear-list flex align-center justify-end">
@@ -50,8 +57,8 @@
             <div class="about-container flex justify-center align-center direction-column main-layout">
                 <img src="img/alina.png">
                 <div class="info flex justify-center direction-column">
-                    <h2>Monica Geller</h2>
-                    <p>is a fictional character, one of the six main characters <br> who appears on the American sitcom
+                    <h2 data-trans="monica">Monica Geller</h2>
+                    <p data-trans="monica-text">is a fictional character, one of the six main characters <br> who appears on the American sitcom
                         Friends
                         (1994–2004). Created by David Crane and Marta Kauffman</p>
                     <ul class="clear-list flex justify-center">
@@ -126,15 +133,15 @@
                     <div class="stickers flex rounded bg-white justify-between">
                        <!-- STIKERS ARE RENDERED -->
                     </div>
-                    <button class="share rounded bg-orange" onclick="onShare()">Share</button>
-                    <button class="save rounded bg-orange" onclick="onSave()">Save</button>
+                    <button class="share rounded bg-orange" onclick="onShare()" data-trans="share">Share</button>
+                    <button class="save rounded bg-orange" onclick="onSave()" data-trans="save">Save</button>
                 </div>
             </div>
         </div>
     </div>
     <div class="memes bg-gray" hidden>
         <div class="memes-container main-layout">
-            <h2></h2>
+            <h2 data-trans="dont-have-memes"></h2>
             <ul class="clear-list grid">
                 <!-- MEMES ARE RENDERED -->
             </ul>
@@ -142,7 +149,7 @@
     </div>
     <footer class="flex direction-column justify-center align-center bg-orange">
         <img class="logo" src="img/LOGO.png">
-        <small>all rights reserved 2019</small>
+        <small data-trans="rights">all rights reserved 2019</small>
     </footer>
     <div class="modal flex justify-center align-center">
         <div class="screen" onclick="onCloseModal()"></div>
@@ -154,6 +161,7 @@
     <script src="js/utils.js"></script>
     <script src="js/services/upload-service.js"></script>
     <script src="js/services/storage.service.js"></script>
+    <script src="js/services/i18n.service.js"></script>
     <script src="js/modal-controller.js"></script>
     <script src="js/main-nav.controller.js"></script>
     <script src="js/services/saved-memes.service.js"></script>

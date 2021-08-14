@@ -1,88 +1,118 @@
 var gTrans = {
-    welcome: {
-        en: 'Welcome to my bookshop',
-        he: 'ברוכים הבאים לחנות הספרים שלי'
-    },
     language: {
-        en: 'language',
+        en: 'Language',
         he: 'שפה'
     },
-    'log-out': {
-        en: 'Log Out',
-        he: 'התנתק'
+    gallery: {
+        en: 'Gallery',
+        he: 'גלריה'
     },
-    'create-new-book': {
-        en: 'Create new book',
-        he: 'צור ספר חדש'
+    memes: {
+        en: 'Memes',
+        he: 'ממים',
     },
-    'filter-by-title': {
-        en: 'Filter By Title',
-        he: 'סינון לפי כותרת'
+    about: {
+        en: 'About',
+        he: 'אודות'
     },
-    id: {
-        en: 'Id',
-        he: 'מספר זיהוי'
+    searchPlaceholder: {
+        en: 'Enter search keyword',
+        he: 'הזן מילת חיפוש'
     },
-    title: {
-        en: 'Title',
-        he: 'כותרת'
+    upload: {
+        en: 'Upload from your computer',
+        he: 'העלה תמונה מהמחשב'
     },
-    price: {
-        en: 'Price',
-        he: 'מחיר'
+    monica: {
+        en: 'Monica Geller',
+        he: 'מוניקה גלר'
     },
-    actions: {
-        en: 'Actions',
-        he: 'פעולות'
+    'monica-text': {
+        en: 'is a fictional character, one of the six main characters who appears on the American sitcom Friends (1994–2004). Created by David Crane and Marta Kauffman',
+        he: 'היא דמות בדיונית, אחת מששת הדמויות הראשיות המופיע בסיטקום האמריקאי חברים (1994–2004). נוצר על ידי דיוויד קריין ומרתה קאופמן'
     },
-    rate: {
-        en: 'rate',
-        he: 'ניקוד'
+    save: {
+        en: 'Save',
+        he: 'שמור'
     },
-    'img-url': {
-        en: 'Image Url',
-        he: 'נתיב תמונה'
+    share: {
+        en: 'Share',
+        he: 'שתף'
     },
-    read: {
-        en: 'read',
-        he: 'קרא'
-    },
-    update: {
-        en: 'Update',
-        he: 'עדכן'
-    },
-    delete: {
-        en: 'Delete',
+    remove: {
+        en: 'Remove',
         he: 'מחק'
     },
-    'add-book': {
-        en: 'Add Book',
-        he: 'צור ספר'
+    edit: {
+        en: 'Edit',
+        he: 'ערוך'
     },
-    close: {
-        en: 'Close',
-        he: 'סגור'
+    download: {
+        en: 'Download',
+        he: 'הורד'
     },
-    back: {
-        en: 'back',
-        he: 'אחורה'
+    'dont-have-memes': {
+        en: 'You didn`t saved any memes yet',
+        he: 'לא שמרת ממים עדיין'
     },
-    next: {
-        en: 'next',
-        he: 'הבא'
+    'made-by': {
+        en: 'Made By Shahar Meshulam',
+        he: 'נוצר ע"י שחר משולם'
+    },
+    rights: {
+        en: 'all rights reserved 2019',
+        he: 'כל הזכויות שמורות 2019'
+    },
+    cats:{
+        en: 'cats',
+        he: 'חתולים'
+    },
+    dogs:{
+        en: 'dogs',
+        he: 'כלבים'
+    },
+    animals:{
+        en: 'animals',
+        he: 'חיות'
+    },
+    people:{
+        en: 'people',
+        he: 'אנשים'
+    },
+    politics:{
+        en: 'politics',
+        he: 'פוליטיקה'
+    },
+    cute:{
+        en: 'cute',
+        he: 'חמוד'
+    },
+    celebrity:{
+        en: 'celebrity',
+        he: 'מפורסמים'
+    },
+    babies:{
+        en: 'babies',
+        he: 'תינוקות'
+    },
+    sport:{
+        en: 'sport',
+        he: 'ספורט'
+    }, 
+    funny:{
+        en: 'funny',
+        he: 'מצחיק'
+    },
+    'more...': {
+        en: 'more...',
+        he: 'עוד...'
+    },
+    'less...': {
+        en: 'less...',
+        he: 'פחות...'
     }
 }
 var gLang = 'en';
-gCurrency = {
-    en: {
-        lang: 'en-EN',
-        currency: 'USD'
-    },
-    he: {
-        lang: 'he-HE',
-        currency: 'ILS'
-    }
-}
 
 function getTrans(transKey) {
     var keyTrans = gTrans[transKey];

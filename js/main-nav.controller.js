@@ -30,3 +30,24 @@ function onSetPage(pageName) {
             document.querySelector('.memes').hidden = true;
     }
 }
+
+function onSetLang(lang) {
+    setLang(lang)
+    if (lang === 'he') {
+        document.body.classList.add('rtl');
+    } else {
+        document.body.classList.remove('rtl');
+    }
+    doTrans();
+}
+
+function doTrans() {
+    var els = document.querySelectorAll('[data-trans]');
+    els.forEach(function (el) {
+        if (el.nodeName === 'INPUT') {
+            el.setAttribute('placeholder', getTrans(el.dataset.trans));
+        } else {
+            if (el.innerText) el.innerText = getTrans(el.dataset.trans);
+        }
+    });
+}
