@@ -59,8 +59,9 @@ function addTouchListeners() {
 }
 
 function onMove(ev) {
-    if (!gIsDrag || !getSelectedLine() && !getSelectedSticker()) return;
     const pos = getEvPos(ev);
+    setCursorType(pos);
+    if (!gIsDrag || !getSelectedLine() && !getSelectedSticker()) return;
     const dx = pos.x - gStartPos.x;
     const dy = pos.y - gStartPos.y;
     if (gSizingCircleSelected) {
@@ -70,27 +71,42 @@ function onMove(ev) {
     draw();
 }
 
+function setCursorType(pos) {
+    if ((getSelectedLine() || getSelectedSticker()) && isMouseOnCircle(pos)) {
+        gElCanvas.style.cursor = 'nwse-resize';
+    } else if (gIsDrag && (getSelectedLine() && getSelectedLine().id === getMouseOnLineId(pos)) || (getSelectedSticker() && getSelectedSticker().id === getMouseOnStickerId(pos))) {
+        gElCanvas.style.cursor = 'grabbing';
+    } else if (!gIsDrag && (getSelectedLine() && getSelectedLine().id === getMouseOnLineId(pos)) || (getSelectedSticker() && getSelectedSticker().id === getMouseOnStickerId(pos))) {
+        gElCanvas.style.cursor = 'grab';
+    } else if (!gIsDrag && (getMouseOnLineId(pos) || getMouseOnStickerId(pos))) {
+        gElCanvas.style.cursor = 'pointer';
+    } else {
+        gElCanvas.style.cursor = 'unset';
+    }
+}
+
 function onDown(ev) {
     ev.preventDefault();
     gStartPos = getEvPos(ev);
-    if (isSizingCircleClicked(gStartPos) && (getSelectedLine() || getSelectedSticker())) {
+    if (isMouseOnCircle(gStartPos) && (getSelectedLine() || getSelectedSticker())) {
         gSizingCircleSelected = true;
         gIsDrag = true;
     }
     else {
-        const clickedLineIdx = getClickedLineIdx()
-        if (clickedLineIdx >= 0) {
-            setSelectedLine(clickedLineIdx);
+        const clickedLineId = getMouseOnLineId(gStartPos)
+        if (clickedLineId) {
+            setSelectedLine(clickedLineId);
             setSelectedSticker(null)
             updateText();
             gIsDrag = true;
             draw();
             return;
         }
-        const clickedStickerIdx = getClickedStickerIdx();
-        if (clickedStickerIdx >= 0) {
-            setSelectedSticker(clickedStickerIdx);
+        const clickedStickerId = getMouseOnStickerId(gStartPos);
+        if (clickedStickerId) {
+            setSelectedSticker(clickedStickerId);
             setSelectedLine(null);
+            document.querySelector('[name=txt]').value = '';
             gIsDrag = true;
             draw();
             return
@@ -103,46 +119,24 @@ function onUp(ev) {
     gSizingCircleSelected = false;
 }
 
-function getClickedLineIdx() {
-    const lines = getMeme().lines;
-    for (let i = 0; i < lines.length; i++) {
-        const currLine = lines[i];
-        let currLineX1 = getLineX(currLine);
-        let currLineX2 = currLineX1 + currLine.width + MARGIN * 2;
-        let currLineY1 = currLine.y - currLine.size - MARGIN / 4;;
-        let currLineY2 = currLineY1 + currLine.size + MARGIN
-        if (gStartPos.x > currLineX1 && gStartPos.x < currLineX2 && gStartPos.y > currLineY1 && gStartPos.y < currLineY2) {
-            return i;
-        }
-    }
-    return -1;
-}
 
-function getClickedStickerIdx() {
-    const stickers = getMeme().stickers;
-    for (let i = 0; i < stickers.length; i++) {
-        const currSticker = stickers[i];
-        if (gStartPos.x > currSticker.x - MARGIN && gStartPos.x < currSticker.x + currSticker.width + MARGIN &&
-            gStartPos.y > currSticker.y - MARGIN && gStartPos.y < currSticker.y + currSticker.height + MARGIN) {
-            return i;
-        }
-    }
-}
-
-function isSizingCircleClicked(clickedPos) {
+function isMouseOnCircle(clickedPos) {
     const selectedSticker = getSelectedSticker();
     const selectedLine = getSelectedLine();
     let circleX;
     let circleY;
-    if (selectedSticker) {
-        circleX = selectedSticker.x + selectedSticker.width + MARGIN;
-        circleY = selectedSticker.y + selectedSticker.height + MARGIN;
-    } else {
-        circleY = selectedLine.y + MARGIN;
-        circleX = getLineX(selectedLine) + selectedLine.width + MARGIN *2;
+    if (selectedLine || selectedSticker) {
+        if (selectedSticker) {
+            circleX = selectedSticker.x + selectedSticker.width + MARGIN;
+            circleY = selectedSticker.y + selectedSticker.height + MARGIN;
+        } else {
+            circleY = selectedLine.y + MARGIN;
+            circleX = getSelectedLineX() + selectedLine.width + MARGIN * 2;
+        }
+        let distance = Math.sqrt((circleX - clickedPos.x) ** 2 + (circleY - clickedPos.y) ** 2);
+        return distance <= SIZING_CIRCLE_RADIUS;
     }
-    let distance = Math.sqrt((circleX - clickedPos.x) ** 2 + (circleY - clickedPos.y) ** 2);
-    return distance <= SIZING_CIRCLE_RADIUS;
+    return null;
 }
 
 function getEvPos(ev) {
@@ -275,6 +269,7 @@ function save() {
     // restore rect around selected text / sticker
     drawLineSelectedRect();
     drawSelectedStickerRect();
+    drawSizingCircle();
 }
 
 function onShare() {
@@ -287,6 +282,7 @@ function share() {
     // restore rect around selected text / sticker
     drawLineSelectedRect();
     drawSelectedStickerRect();
+    drawSizingCircle();
 }
 
 function onDownloadCanvas(elLink) {
@@ -325,7 +321,7 @@ function draw(shareSaveCallback) {
 function drawLineSelectedRect() {
     var currLine = getSelectedLine();
     if (!currLine) return;
-    let lineX1 = getLineX(currLine);
+    let lineX1 = getSelectedLineX();
     let lineX2 = currLine.width + MARGIN * 2;
     let lineY1 = currLine.y - currLine.size - MARGIN / 4;
     let lineY2 = currLine.size + MARGIN;
@@ -344,25 +340,12 @@ function drawSizingCircle() {
     if (selectedSticker) {
         drawArc(selectedSticker.x + selectedSticker.width + MARGIN, selectedSticker.y + selectedSticker.height + MARGIN);
     } else if (selectedLine) {
-        let currLineX = getLineX(selectedLine);
-        drawArc(currLineX + selectedLine.width + MARGIN*2, selectedLine.y + MARGIN);
+        let currLineX = getSelectedLineX();
+        drawArc(currLineX + selectedLine.width + MARGIN * 2, selectedLine.y + MARGIN);
     }
 }
 
-function getLineX(line) {
-    let currLineX;
-    switch (line.align) {
-        case 'right':
-            currLineX = line.x - line.width - MARGIN;
-            break;
-        case 'left':
-            currLineX = line.x - MARGIN;
-            break;
-        default:
-            currLineX = line.x - line.width / 2 - MARGIN
-    }
-    return currLineX;
-}
+
 
 function renderImg(img, callback = null) {
     const image = new Image();

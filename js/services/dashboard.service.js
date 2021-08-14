@@ -35,7 +35,7 @@ function getStickers() {
 }
 
 function addSticker(url, x, y, width, height) {
-    gMeme.stickers.push({ url, x, y, width, height });
+    gMeme.stickers.push({ id: makeId(), url, x, y, width, height });
     setSelectedSticker(gMeme.stickers.length - 1);
 }
 
@@ -43,8 +43,8 @@ function getSelectedSticker() {
     return gMeme.stickers[gMeme.selectedStickerIdx];
 }
 
-function setSelectedSticker(idx) {
-    gMeme.selectedStickerIdx = idx;
+function setSelectedSticker(id) {
+    gMeme.selectedStickerIdx = gMeme.stickers.findIndex(sticker => sticker.id === id);
 }
 
 function setLineText(txt) {
@@ -78,10 +78,10 @@ function changeSelectedLineIdx() {
 }
 
 function move(dx, dy) {
-    if (gMeme.selectedLineIdx !== null) {
+    if (gMeme.selectedLineIdx !== null && gMeme.selectedLineIdx !== -1) {
         gMeme.lines[gMeme.selectedLineIdx].x += dx;
         gMeme.lines[gMeme.selectedLineIdx].y += dy;
-    } else if (gMeme.selectedStickerIdx !== null) {
+    } else if (gMeme.selectedStickerIdx !== null && gMeme.selectedStickerIdx !== -1) {
         gMeme.stickers[gMeme.selectedStickerIdx].x += dx;
         gMeme.stickers[gMeme.selectedStickerIdx].y += dy;
     }
@@ -90,9 +90,9 @@ function move(dx, dy) {
 function resize(dx, dy) {
     const selectedSticker = getSelectedSticker();
     const selectedLine = getSelectedLine();
-    if(selectedLine) {
+    if (selectedLine) {
         selectedLine.size += dx;
-    }else if(selectedSticker) {
+    } else if (selectedSticker) {
         selectedSticker.width += dx;
         selectedSticker.height += dy;
     }
@@ -122,8 +122,51 @@ function getSelectedLine() {
     return gMeme.lines[gMeme.selectedLineIdx];
 }
 
-function setSelectedLine(idx) {
-    gMeme.selectedLineIdx = idx;
+function getSelectedLineX() {
+    const selectedLine = getSelectedLine();
+    let currLineX;
+    switch (selectedLine.align) {
+        case 'right':
+            currLineX = selectedLine.x - selectedLine.width - MARGIN;
+            break;
+        case 'left':
+            currLineX = selectedLine.x - MARGIN;
+            break;
+        default:
+            currLineX = selectedLine.x - selectedLine.width / 2 - MARGIN
+    }
+    return currLineX;
+}
+
+function getMouseOnLineId(mousePos) {
+    const lines = gMeme.lines;
+    for (let i = 0; i < lines.length; i++) {
+        const currLine = lines[i];
+        let currLineX1 = getLineX(currLine);
+        let currLineX2 = currLineX1 + currLine.width + MARGIN * 2;
+        let currLineY1 = currLine.y - currLine.size - MARGIN / 4;;
+        let currLineY2 = currLineY1 + currLine.size + MARGIN
+        if (mousePos.x > currLineX1 && mousePos.x < currLineX2 && mousePos.y > currLineY1 && mousePos.y < currLineY2) {
+            return getMeme().lines[i].id;
+        }
+    }
+    return null;
+}
+
+function getMouseOnStickerId(mousePos) {
+    const stickers = gMeme.stickers;
+    for (let i = 0; i < stickers.length; i++) {
+        const currSticker = stickers[i];
+        if (mousePos.x > currSticker.x - MARGIN && mousePos.x < currSticker.x + currSticker.width + MARGIN &&
+            mousePos.y > currSticker.y - MARGIN && mousePos.y < currSticker.y + currSticker.height + MARGIN) {
+            return getMeme().stickers[i].id;
+        }
+    }
+    return null;
+}
+
+function setSelectedLine(id) {
+    gMeme.selectedLineIdx = gMeme.lines.findIndex(line => line.id === id);
 }
 
 function getSelectedImgId() {
@@ -135,10 +178,10 @@ function setLineWidth(lineIdx, width) {
 }
 
 function remove() {
-    if (gMeme.selectedLineIdx !== null) {
+    if (gMeme.selectedLineIdx !== null && gMeme.selectedLineIdx !== -1) {
         gMeme.lines.splice(gMeme.selectedLineIdx, 1);
         gMeme.selectedLineIdx = null;
-    } else if (gMeme.selectedStickerIdx !== null) {
+    } else if (gMeme.selectedStickerIdx !== null && gMeme.selectedStickerIdx !== -1) {
         gMeme.stickers.splice(gMeme.selectedStickerIdx, 1);
         gMeme.selectedStickerIdx = null;
     }
@@ -150,6 +193,7 @@ function setMemeId(id) {
 
 function _createLine(txt, x, y, strokeColor, color, size, font = 'Impact', align = 'center') {
     return {
+        id: makeId(),
         txt,
         x,
         y,
