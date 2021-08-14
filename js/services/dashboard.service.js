@@ -35,8 +35,9 @@ function getStickers() {
 }
 
 function addSticker(url, x, y, width, height) {
-    gMeme.stickers.push({ id: makeId(), url, x, y, width, height });
-    setSelectedSticker(gMeme.stickers.length - 1);
+    const id = makeId();
+    gMeme.stickers.push({ id, url, x, y, width, height });
+    setSelectedSticker(id);
 }
 
 function getSelectedSticker() {
@@ -122,27 +123,27 @@ function getSelectedLine() {
     return gMeme.lines[gMeme.selectedLineIdx];
 }
 
-function getSelectedLineX() {
-    const selectedLine = getSelectedLine();
-    let currLineX;
-    switch (selectedLine.align) {
-        case 'right':
-            currLineX = selectedLine.x - selectedLine.width - MARGIN;
-            break;
-        case 'left':
-            currLineX = selectedLine.x - MARGIN;
-            break;
-        default:
-            currLineX = selectedLine.x - selectedLine.width / 2 - MARGIN
-    }
-    return currLineX;
+function getSelectedLineX(line = null) {
+    const selectedLine = line || getSelectedLine();
+        let currLineX;
+        switch (selectedLine.align) {
+            case 'right':
+                currLineX = selectedLine.x - selectedLine.width - MARGIN;
+                break;
+            case 'left':
+                currLineX = selectedLine.x - MARGIN;
+                break;
+            default:
+                currLineX = selectedLine.x - selectedLine.width / 2 - MARGIN
+        }
+        return currLineX;
 }
 
 function getMouseOnLineId(mousePos) {
     const lines = gMeme.lines;
     for (let i = 0; i < lines.length; i++) {
         const currLine = lines[i];
-        let currLineX1 = getSelectedLineX();
+        let currLineX1 = getSelectedLineX(currLine);
         let currLineX2 = currLineX1 + currLine.width + MARGIN * 2;
         let currLineY1 = currLine.y - currLine.size - MARGIN / 4;;
         let currLineY2 = currLineY1 + currLine.size + MARGIN

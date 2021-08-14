@@ -74,9 +74,9 @@ function onMove(ev) {
 function setCursorType(pos) {
     if ((getSelectedLine() || getSelectedSticker()) && isMouseOnCircle(pos)) {
         gElCanvas.style.cursor = 'nwse-resize';
-    } else if (gIsDrag && (getSelectedLine() && getSelectedLine().id === getMouseOnLineId(pos)) || (getSelectedSticker() && getSelectedSticker().id === getMouseOnStickerId(pos))) {
+    } else if (gIsDrag && (getSelectedLine() && getSelectedLine().id === getMouseOnLineId(pos) || (getSelectedSticker() && getSelectedSticker().id === getMouseOnStickerId(pos)))) {
         gElCanvas.style.cursor = 'grabbing';
-    } else if (!gIsDrag && (getSelectedLine() && getSelectedLine().id === getMouseOnLineId(pos)) || (getSelectedSticker() && getSelectedSticker().id === getMouseOnStickerId(pos))) {
+    } else if (!gIsDrag && (getSelectedLine() && getSelectedLine().id === getMouseOnLineId(pos) || (getSelectedSticker() && getSelectedSticker().id === getMouseOnStickerId(pos)))) {
         gElCanvas.style.cursor = 'grab';
     } else if (!gIsDrag && (getMouseOnLineId(pos) || getMouseOnStickerId(pos))) {
         gElCanvas.style.cursor = 'pointer';
