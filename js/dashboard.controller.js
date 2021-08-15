@@ -94,6 +94,7 @@ function onDown(ev) {
     }
     else {
         const clickedLineId = getMouseOnLineId(gStartPos)
+        const clickedStickerId = getMouseOnStickerId(gStartPos);
         if (clickedLineId) {
             setSelectedLine(clickedLineId);
             setSelectedSticker(null)
@@ -101,15 +102,20 @@ function onDown(ev) {
             gIsDrag = true;
             draw();
             return;
-        }
-        const clickedStickerId = getMouseOnStickerId(gStartPos);
-        if (clickedStickerId) {
-            setSelectedSticker(clickedStickerId);
+        } else if(clickedStickerId){
+            if (clickedStickerId) {
+                setSelectedSticker(clickedStickerId);
+                setSelectedLine(null);
+                document.querySelector('[name=txt]').value = '';
+                gIsDrag = true;
+                draw();
+                return
+            }
+        } else if(getSelectedLine() || getSelectedSticker()) {
+            setSelectedSticker(null);
             setSelectedLine(null);
             document.querySelector('[name=txt]').value = '';
-            gIsDrag = true;
             draw();
-            return
         }
     }
 }
