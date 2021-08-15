@@ -25,7 +25,7 @@ function onDashboardInit(selectedImgId, memeId = null) {
     addTouchListeners();
     window.addEventListener('resize', onResize);
     if (!memeId) {
-        draw();
+        renderCanvas();
         document.querySelector('[name=txt]').value = '';
     } else onLoadMeme(memeId);
 }
@@ -37,13 +37,13 @@ function renderStickers() {
 
 function onStickerClicked(stickerId) {
     setSelectedLine(null);
-    draw();
+    renderCanvas();
     renderSticker(getStickerById(stickerId), onAddSticker);
 }
 
 function onAddSticker(url, stickerX, stickerY, stickerWidth, stickerHeight) {
     addSticker(url, stickerX, stickerY, stickerWidth, stickerHeight);
-    draw();
+    renderCanvas();
 }
 
 function addMouseListeners() {
@@ -56,33 +56,6 @@ function addTouchListeners() {
     gElCanvas.addEventListener('touchmove', onMove)
     gElCanvas.addEventListener('touchstart', onDown)
     gElCanvas.addEventListener('touchend', onUp)
-}
-
-function onMove(ev) {
-    const pos = getEvPos(ev);
-    setCursorType(pos);
-    if (!gIsDrag || !getSelectedLine() && !getSelectedSticker()) return;
-    const dx = pos.x - gStartPos.x;
-    const dy = pos.y - gStartPos.y;
-    if (gSizingCircleSelected) {
-        resize(dx, dy);
-    } else move(dx, dy);
-    gStartPos = pos;
-    draw();
-}
-
-function setCursorType(pos) {
-    if ((getSelectedLine() || getSelectedSticker()) && isMouseOnCircle(pos)) {
-        gElCanvas.style.cursor = 'nwse-resize';
-    } else if (gIsDrag && (getSelectedLine() && getSelectedLine().id === getMouseOnLineId(pos) || (getSelectedSticker() && getSelectedSticker().id === getMouseOnStickerId(pos)))) {
-        gElCanvas.style.cursor = 'grabbing';
-    } else if (!gIsDrag && (getSelectedLine() && getSelectedLine().id === getMouseOnLineId(pos) || (getSelectedSticker() && getSelectedSticker().id === getMouseOnStickerId(pos)))) {
-        gElCanvas.style.cursor = 'grab';
-    } else if (!gIsDrag && (getMouseOnLineId(pos) || getMouseOnStickerId(pos))) {
-        gElCanvas.style.cursor = 'pointer';
-    } else {
-        gElCanvas.style.cursor = 'unset';
-    }
 }
 
 function onDown(ev) {
@@ -100,7 +73,7 @@ function onDown(ev) {
             setSelectedSticker(null)
             updateText();
             gIsDrag = true;
-            draw();
+            renderCanvas();
             return;
         } else if(clickedStickerId){
             if (clickedStickerId) {
@@ -108,17 +81,45 @@ function onDown(ev) {
                 setSelectedLine(null);
                 document.querySelector('[name=txt]').value = '';
                 gIsDrag = true;
-                draw();
+                renderCanvas();
                 return
             }
         } else if(getSelectedLine() || getSelectedSticker()) {
             setSelectedSticker(null);
             setSelectedLine(null);
             document.querySelector('[name=txt]').value = '';
-            draw();
+            renderCanvas();
         }
     }
 }
+
+function onMove(ev) {
+    const pos = getEvPos(ev);
+    setCursorType(pos);
+    if (!gIsDrag || !getSelectedLine() && !getSelectedSticker()) return;
+    const dx = pos.x - gStartPos.x;
+    const dy = pos.y - gStartPos.y;
+    if (gSizingCircleSelected) {
+        resize(dx, dy);
+    } else move(dx, dy);
+    gStartPos = pos;
+    renderCanvas();
+}
+
+function setCursorType(pos) {
+    if ((getSelectedLine() || getSelectedSticker()) && isMouseOnCircle(pos)) {
+        gElCanvas.style.cursor = 'nwse-resize';
+    } else if (gIsDrag && (getSelectedLine() && getSelectedLine().id === getMouseOnLineId(pos) || (getSelectedSticker() && getSelectedSticker().id === getMouseOnStickerId(pos)))) {
+        gElCanvas.style.cursor = 'grabbing';
+    } else if (!gIsDrag && (getSelectedLine() && getSelectedLine().id === getMouseOnLineId(pos) || (getSelectedSticker() && getSelectedSticker().id === getMouseOnStickerId(pos)))) {
+        gElCanvas.style.cursor = 'grab';
+    } else if (!gIsDrag && (getMouseOnLineId(pos) || getMouseOnStickerId(pos))) {
+        gElCanvas.style.cursor = 'pointer';
+    } else {
+        gElCanvas.style.cursor = 'unset';
+    }
+}
+
 
 function onUp(ev) {
     gIsDrag = false;
@@ -165,12 +166,12 @@ function onLoadMeme(memeId) {
     loadMeme(memeId);
     if (getSelectedLine()) updateText();
     else document.querySelector('[name=txt]').value = '';
-    draw();
+    renderCanvas();
 }
 
 function onResize() {
     resizeCanvas();
-    draw();
+    renderCanvas();
 }
 
 function resizeCanvas() {
@@ -189,7 +190,7 @@ function updateText() {
 function onTextChange(txt) {
     if (!getSelectedLine()) return;
     setLineText(txt);
-    draw();
+    renderCanvas();
 }
 
 function onChangeTextFromKeyup(ev) {
@@ -214,7 +215,7 @@ function onChangeLine() {
     if (!getSelectedLine()) return;
     setSelectedSticker(null);
     updateText();
-    draw();
+    renderCanvas();
 }
 
 function onAddTxt() {
@@ -224,47 +225,47 @@ function onAddTxt() {
     const textFont = document.querySelector('[name=font').value;
     addTxt(text, gElCanvas.width, gElCanvas.height, textStrokeColor, textColor, textFont);
     setSelectedSticker(null);
-    draw();
+    renderCanvas();
 }
 
 function onRemove() {
     if (!getSelectedLine() && !getSelectedSticker()) return;
     remove();
-    draw();
+    renderCanvas();
 }
 
 function onChangeFontSize(diff) {
     if (!getSelectedLine()) return;
     changeFontSize(diff);
-    draw();
+    renderCanvas();
 }
 
 function onSetAlign(alignOption) {
     if (!getSelectedLine()) return;
     setLineAlign(alignOption);
-    draw();
+    renderCanvas();
 }
 
 function onSetFont(fontOption) {
     setFont(fontOption);
     if (!getSelectedLine()) return;
-    draw();
+    renderCanvas();
 }
 
 function onStrokeColorChange(colorValue) {
     if (!getSelectedLine()) return;
     setLineStrokeColor(colorValue);
-    draw();
+    renderCanvas();
 }
 
 function onTextColorChange(colorValue) {
     if (!getSelectedLine()) return;
     setLineTextColor(colorValue);
-    draw();
+    renderCanvas();
 }
 
 function onSave() {
-    draw(save);
+    renderCanvas(save);
 }
 
 function save() {
@@ -279,7 +280,7 @@ function save() {
 }
 
 function onShare() {
-    draw(share)
+    renderCanvas(share)
 }
 
 function share() {
@@ -296,7 +297,7 @@ function onDownloadCanvas(elLink) {
     elLink.href = data;
 }
 
-function draw(shareSaveCallback) {
+function renderCanvas(shareSaveCallback) {
     renderImg(getImgSrcById(getSelectedImgId()), () => {
         const meme = getMeme();
         meme.lines.forEach((line, idx) =>
@@ -350,8 +351,6 @@ function drawSizingCircle() {
         drawArc(currLineX + selectedLine.width + MARGIN * 2, selectedLine.y + MARGIN);
     }
 }
-
-
 
 function renderImg(img, callback = null) {
     const image = new Image();

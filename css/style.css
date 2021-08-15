@@ -417,6 +417,7 @@ div.dashboard {
     font-size: 1.25em;
     width: auto;
     cursor: pointer;
+    align-self: end;
 }
 
 .controls-container .share {
