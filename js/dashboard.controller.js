@@ -219,11 +219,15 @@ function onChangeLine() {
 }
 
 function onAddTxt() {
-    const text = document.querySelector('[name=txt]').value
+    const text = document.querySelector('[name=txt]');
+    if(getSelectedLine()) {
+        setSelectedLine(null);
+        text.value = '';
+    }
     const textStrokeColor = document.querySelector('[name=text-stroke]').value;
     const textColor = document.querySelector('[name=text-color]').value;
     const textFont = document.querySelector('[name=font').value;
-    addTxt(text, gElCanvas.width, gElCanvas.height, textStrokeColor, textColor, textFont);
+    addTxt(text.value, gElCanvas.width, gElCanvas.height, textStrokeColor, textColor, textFont);
     setSelectedSticker(null);
     renderCanvas();
 }
