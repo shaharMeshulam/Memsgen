@@ -75,7 +75,7 @@ function onDown(ev) {
             gIsDrag = true;
             renderCanvas();
             return;
-        } else if(clickedStickerId){
+        } else if (clickedStickerId) {
             if (clickedStickerId) {
                 setSelectedSticker(clickedStickerId);
                 setSelectedLine(null);
@@ -84,7 +84,7 @@ function onDown(ev) {
                 renderCanvas();
                 return
             }
-        } else if(getSelectedLine() || getSelectedSticker()) {
+        } else if (getSelectedLine() || getSelectedSticker()) {
             setSelectedSticker(null);
             setSelectedLine(null);
             document.querySelector('[name=txt]').value = '';
@@ -220,7 +220,7 @@ function onChangeLine() {
 
 function onAddTxt() {
     const text = document.querySelector('[name=txt]');
-    if(getSelectedLine()) {
+    if (getSelectedLine()) {
         setSelectedLine(null);
         text.value = '';
     }
@@ -359,14 +359,22 @@ function drawSizingCircle() {
 function renderImg(img, callback = null) {
     const image = new Image();
     image.onload = function () {
-        const wrh = image.width / image.height;
-        let newWidth = gElCanvas.width;
-        let newHeight = newWidth / wrh;
-        if (newHeight > gElCanvas.height) {
-            newHeight = gElCanvas.height;
-            newWidth = newHeight * wrh;
-        }
-        gCtx.drawImage(image, 0, 0, newWidth, newHeight);
+        // const wrh = image.width / image.height;
+        // let newWidth = gElCanvas.width;
+        // let newHeight = newWidth / wrh;
+        // if (newHeight > gElCanvas.height) {
+        //     newHeight = gElCanvas.height;
+        //     newWidth = newHeight * wrh;
+        // }
+        const scale = Math.max(gElCanvas.width / image.naturalWidth, gElCanvas.height / image.naturalHeight)
+        const x = (gElCanvas.width / 2) - (image.naturalWidth / 2) * scale;
+        const y = (gElCanvas.height / 2) - (image.naturalHeight / 2) * scale;
+
+
+        // const ch = image.height * gElCanvas.height / image.height;
+        // gElCanvas.height = ch;
+        // gCtx.drawImage(image, 0, 0, image.width, image.height);
+        gCtx.drawImage(image, x, y, image.naturalWidth * scale, image.naturalHeight * scale)
         if (callback) callback();
     };
     image.src = img;

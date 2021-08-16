@@ -22,7 +22,7 @@ let gImgs = [
     { id: 17, url: "img/memes/17.jpg", keywords: ['people', 'celebrity', 'politics'] },
     { id: 18, url: "img/memes/18.jpg", keywords: ['celebrity'] },
     { id: 19, url: "img/memes/19.jpg", keywords: ['people', 'celebrity'] },
-    // { id: 20, url: "img/memes/20.jpg", keywords: ['people', 'celebrity'] },
+    { id: 20, url: "img/memes/20.jpg", keywords: ['people', 'celebrity'] },
     { id: 21, url: "img/memes/21.jpg", keywords: ['people', 'funny'] },
     { id: 22, url: "img/memes/22.jpg", keywords: ['people', 'celebrity'] },
     { id: 23, url: "img/memes/23.jpg", keywords: ['cats', 'animals', 'funny'] },
